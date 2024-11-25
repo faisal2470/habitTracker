@@ -4,14 +4,44 @@ from kivy.uix.label import Label
 from kivy.uix.textinput import TextInput
 from kivy.uix.button import Button
 from kivy.uix.scrollview import ScrollView
+from kivy.graphics import Color, Rectangle, RoundedRectangle
+
+class CustomBoxLayout(BoxLayout):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        # Add a Canvas instruction for the background
+        with self.canvas.before:
+            Color(0.7, 0.7, 0.7, 1) # Light Blue Background
+            self.rect = Rectangle(size=self.size, pos=self.pos)
+        # Bind size and position updates to keep the background in place
+        self.bind(size=self._rect_update, pos=self._rect_update)
+
+    def _rect_update(self, instance, value):
+        self.rect.size = instance.size
+        self.rect.pos = instance.pos
+
+class CustomLabel(Label):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        # Add a canvas to the background
+        with self.canvas.before:
+            Color(0.5, 0.5, 0.2, 1) # Olive Green Background
+            self.rect = RoundedRectangle(size=self.size, pos=self.pos)
+        # Bind size and position updates to keep the background in place
+        self.bind(size=self._rect_update, pos=self._rect_update)
+        # self.color = (0.82, 0.71, 0.55, 1) # Beige Colour
+
+    def _rect_update(self, instance, value):
+        self.rect.size = instance.size
+        self.rect.pos = instance.pos
 
 class HabitTrackerApp(App):
     def build(self):
         # Root Layout
-        self.root_layout = BoxLayout(orientation='vertical', padding=10, spacing=10)
+        self.root_layout = CustomBoxLayout(orientation='vertical', padding=10, spacing=10)
 
         # Title Label
-        title_label = Label(
+        title_label = CustomLabel(
             text="Habit Tracker",
             font_size='24sp',
             size_hint=(1, None),
