@@ -20,12 +20,12 @@ class CustomBoxLayout(BoxLayout):
         self.rect.size = instance.size
         self.rect.pos = instance.pos
 
-class CustomLabel(Label):
-    def __init__(self, **kwargs):
+class CustomColorLabel(Label):
+    def __init__(self, bg_color, **kwargs):
         super().__init__(**kwargs)
         # Add a canvas to the background
         with self.canvas.before:
-            Color(0.5, 0.5, 0.2, 1) # Olive Green Background
+            Color(*bg_color) # Olive Green Background
             self.rect = RoundedRectangle(size=self.size, pos=self.pos)
         # Bind size and position updates to keep the background in place
         self.bind(size=self._rect_update, pos=self._rect_update)
@@ -41,7 +41,8 @@ class HabitTrackerApp(App):
         self.root_layout = CustomBoxLayout(orientation='vertical', padding=10, spacing=10)
 
         # Title Label
-        title_label = CustomLabel(
+        title_label = CustomColorLabel(
+            bg_color=(0.5, 0.5, 0.2, 1),
             text="Habit Tracker",
             font_size='24sp',
             size_hint=(1, None),
@@ -76,12 +77,32 @@ class HabitTrackerApp(App):
             # Create a new habit row
             habit_row = BoxLayout(size_hint_y=None, height=50, spacing=10)
             
-            habit_label = Label(text=habit_text, size_hint=(0.8, 1))
-            toggle_button = Button(text="Incomplete", size_hint=(0.2, 1))
+            habit_label = CustomColorLabel(
+                bg_color=(1, 1, 1, 1), # White color
+                text=habit_text,
+                color=(0, 0, 0, 1),
+                size_hint=(0.8, 1)
+            )
+
+            toggle_button = Button(
+                text="Incomplete", 
+                size_hint=(0.2, 1), 
+                background_color = (1, 0, 0, 1), 
+                background_normal = ""
+            )
             toggle_button.bind(on_press=self.toggle_habit)
+            
+            delete_button = Button(
+                text="Delete", 
+                size_hint=(0.2, 1), 
+                background_color = (0.3, 0.3, 0.3, 1), 
+                background_normal = ""
+            )
+            delete_button.bind(on_press=self.delete_habit)
 
             habit_row.add_widget(habit_label)
             habit_row.add_widget(toggle_button)
+            habit_row.add_widget(delete_button)
             
             self.habit_list.add_widget(habit_row)
 
@@ -96,5 +117,8 @@ class HabitTrackerApp(App):
         else:
             instance.text = "Incomplete"
             instance.background_color = (1, 0, 0, 1)  # Red
+
+    def delete_habit(self, instance):
+        self.habit_list.remove_widget(instance.parent)
     
 HabitTrackerApp().run()
