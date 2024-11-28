@@ -9,12 +9,12 @@ from kivy.uix.scrollview import ScrollView
 from kivy.graphics import Color, Rectangle, RoundedRectangle
 import calendar as cal
 
-class CustomBoxLayout(BoxLayout):
-    pass
-
 class ProductivityApp(App):
-    today = cal.datetime.datetime.now()
-    current_week = int(today.strftime('%W'))
-    week = current_week
+    def build(self):
+        
+        return RootLayout()
+    
+class RootLayout(BoxLayout):
+    pass
 
 ProductivityApp().run()
