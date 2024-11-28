@@ -8,7 +8,6 @@ from kivy.uix.button import Button
 from kivy.uix.scrollview import ScrollView
 from kivy.graphics import Color, Rectangle, RoundedRectangle
 import calendar as cal
-import datetime as dt
 
 class CustomBoxLayout(BoxLayout):
     def __init__(self, **kwargs):
@@ -30,7 +29,7 @@ class CustomColorLabel(Label):
         # Add a canvas to the background
         with self.canvas.before:
             Color(*bg_color) # Olive Green Background
-            self.rect = RoundedRectangle(size=self.size, pos=self.pos)
+            self.rect = Rectangle(size=self.size, pos=self.pos)
         # Bind size and position updates to keep the background in place
         self.bind(size=self._rect_update, pos=self._rect_update)
         # self.color = (0.82, 0.71, 0.55, 1) # Beige Colour
@@ -60,7 +59,7 @@ class CustomTabbedPanel(TabbedPanel):
 class ProductivityApp(App):
     def build(self):
         # Root Layout
-        root_layout = CustomBoxLayout(orientation="vertical", padding=10, spacing=10)
+        root_layout = CustomBoxLayout(orientation="vertical", spacing=10)
 
         # Title Label for the Main Screen
         title_label = CustomColorLabel(
@@ -111,47 +110,80 @@ class ProductivityApp(App):
 
     
     def create_home_tab(self):
+        self.today = cal.datetime.datetime.now()
+        self.current_week = int(self.today.strftime('%W'))
+        self.week = self.current_week
 
         home_tab = TabbedPanelItem(text="Home")
         home_tab.bind(size=home_tab.setter("text_size"))
-        layout = CustomBoxLayout(orientation='vertical')
+        layout = CustomBoxLayout(orientation='vertical', padding=5)
         scroll_view = ScrollView(size_hint=(1, 1))
 
-        header_row = GridLayout(cols=8, size_hint_y=None, height=30)
+        header_row = GridLayout(cols=8, size_hint_y=None, height=25, spacing=1)
         days = cal.day_abbr[:]
-        column = ['Time'] + days
         
-        for col in column:
-            header_row.add_widget(
-                Label( 
-                    text=col, 
-                    color=(0, 0, 0, 1),
-                    bold=True,
-                    size_hint_y=None, 
-                    height=40,
-                    halign='center',
-                    valign='middle'
-                )
+        date_change = BoxLayout(size_hint_y=None, height=25)
+        today_button = Button(
+            text='Today', 
+            size_hint_x=0.5,
+            halign='center',
+            valign='middle'
+        )
+        today_button.bind(size=today_button.setter("text_size"))
+
+        previous_button = Button(text='<', size_hint_x=0.25)
+        next_button = Button(text='>', size_hint_x=0.25)
+
+        date_change.add_widget(previous_button)
+        date_change.add_widget(today_button)
+        date_change.add_widget(next_button)
+
+        header_row.add_widget(date_change)
+        for day in days:
+            day_label = CustomColorLabel(
+                bg_color=(0.4, 0.4, 0.4, 1),
+                text=day, 
+                color=(0, 0, 0, 1),
+                bold=True,
+                size_hint_y=None, 
+                height=25,
+                halign='center',
+                valign='middle'
             )
+            day_label.bind(size=day_label.setter("text_size"))
+            header_row.add_widget(day_label)
+            
         layout.add_widget(header_row)
 
-        self.time_row = GridLayout(cols=8, size_hint_y=None)
-        for t in [dt.time(i).strftime('%H:%M') for i in range(24)]:
-            time_label = Label(
+        # Get Current Week
+        self.get_dates(self.current_week)
+        layout.add_widget(self.week_row)
+
+        self.time_row = GridLayout(cols=8, size_hint_y=None, spacing=1)
+        for t in [cal.datetime.time(i).strftime('%H:%M') for i in range(24)]:
+            time_label = CustomColorLabel(
+                bg_color=(0.5, 0.5, 0.5, 1),
                 text=t,
                 size_hint=(1, None),
-                height=30,
-                color = (0, 0, 0, 1)
+                height=40,
+                color = (0, 0, 0, 1),
+                halign='center',
+                valign='middle'
             )
+            time_label.bind(size=time_label.setter("text_size"))
             self.time_row.add_widget(time_label)
             
             for _ in range(7):
-                cell = Label(
+                cell = CustomColorLabel(
+                    bg_color=(0.6, 0.6, 0.6, 1),
                     text="",
                     size_hint=(1, None),
-                    height=30,
-                    color=(0, 0, 0, 1)
+                    height=40,
+                    color=(0, 0, 0, 1),
+                    halign='center',
+                    valign='middle'
                 )
+                cell.bind(size=cell.setter('text_size'))
                 self.time_row.add_widget(cell)
         
         self.time_row.bind(minimum_height=self.time_row.setter("height"))
@@ -161,7 +193,23 @@ class ProductivityApp(App):
         home_tab.add_widget(layout)
         return home_tab
 
-
+    def get_dates(self, week, year=2024):
+        self.week_row = GridLayout(cols=8, size_hint_y=None, height=25, spacing=1)
+        start_of_week = cal.datetime.datetime.fromisocalendar(year, week, 1)
+        dates = [f'Week {week}'] + [(start_of_week + cal.datetime.timedelta(i)).strftime('%d/%m/%Y') for i in range(7)]
+        for date in dates:
+            date_label = CustomColorLabel(
+                bg_color=(0.4, 0.4, 0.4, 1),
+                text=date, 
+                color=(0, 0, 0, 1),
+                bold=True,
+                size_hint_y=None, 
+                height=25,
+                halign='center',
+                valign='middle'
+            )
+            date_label.bind(size=date_label.setter('text_size'))
+            self.week_row.add_widget(date_label)
 
     def adjust_tab_width(self, instance, value):
         num_tabs = len(instance.tab_list)
