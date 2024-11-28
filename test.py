@@ -10,11 +10,13 @@ from kivy.graphics import Color, Rectangle, RoundedRectangle
 import calendar as cal
 
 class ProductivityApp(App):
+
     def build(self):
-        
+        # Load the KV file automatically    
         return RootLayout()
     
 class RootLayout(BoxLayout):
     pass
 
-ProductivityApp().run()
+if __name__ == "__main__":
+    ProductivityApp().run()
