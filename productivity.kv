@@ -30,7 +30,51 @@
         text_size: self.size
 
     CustomTabbedPanel:
-        size_hint: (1, 0.8)
         tab_pos: 'bottom_left'
         tab_height: 50
+
+        Home:
+            id: home_tab
+
+        Habit:
+            id: habit_tab
+
+        Todo:
+            id: todo_tab
+
+<Home@TabbedPanelItem>:
+    text: 'Home'
+    text_size: self.size
+
+    BoxLayout:
+        canvas.before:
+            Color:
+                rgba: 0.7, 0.7, 0.7, 1
+            Rectangle:
+                size: self.size
+                pos: self.pos
+    
+<Habit@TabbedPanelItem>:
+    text: 'Habit Tracker'
+    text_size: self.size
+
+    BoxLayout:
+        canvas.before:
+            Color:
+                rgba: 0.7, 0.7, 0.7, 1
+            Rectangle:
+                size: self.size
+                pos: self.pos
+
+<Todo@TabbedPanelItem>:
+    text: 'To-Do List'
+    text_size: self.size
+
+    BoxLayout:
+        canvas.before:
+            Color:
+                rgba: 0.7, 0.7, 0.7, 1
+            Rectangle:
+                size: self.size
+                pos: self.pos
 

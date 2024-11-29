@@ -8,8 +8,8 @@ from kivy.uix.textinput import TextInput
 from kivy.uix.button import Button
 from kivy.uix.scrollview import ScrollView
 from kivy.graphics import Color, Rectangle, RoundedRectangle
+from kivy.clock import Clock
 import calendar as cal
-from tab_enum import TabType
 
 class CustomBoxLayout(BoxLayout):
     pass
@@ -20,21 +20,11 @@ class CustomColorLabel(Label):
 class CustomTabbedPanel(TabbedPanel):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.add_tabs()
         self.bind(current_tab=self.update_tab_colors)
+        self.bind(size=self.adjust_tab_width)
         self.do_default_tab = False
-
-    def add_tabs(self):
-        # Add Tabs
-        self.add_widget(self.create_tab(TabType.HOME))
-        self.add_widget(self.create_tab(TabType.HABIT))
-        self.add_widget(self.create_tab(TabType.TODO))
-
-    def create_tab(self, tab_type):
-        # Dynamically create the tab from KV layout
-        tab = TabbedPanelItem(text=tab_type.value)
-        
-        return tab
+        # Schedule setting the default tab after the widget is built
+        Clock.schedule_once(self.set_default_tab, 0)
 
     def update_tab_colors(self, *args):
         for header in self.tab_list:
@@ -43,6 +33,28 @@ class CustomTabbedPanel(TabbedPanel):
                     header.background_color = (0.7, 0.7, 0.7, 1) # Grey Colour
                 else:
                     header.background_color = (0.9, 0.9, 0.9, 1)
+
+    def adjust_tab_width(self, *args):
+        num_tabs = len(self.tab_list)
+        if num_tabs > 0:
+            self.tab_width = self.width/num_tabs - 2
+
+    def set_default_tab(self, *args):
+        # Set the default tab to the Home tab
+        for tab in self.tab_list:
+            if tab.text == "Home":  # Match the tab by its text
+                self.switch_to(tab)
+                break
+
+
+class Home(TabbedPanelItem):
+    pass
+
+class Habit(TabbedPanelItem):
+    pass
+
+class Todo(TabbedPanelItem):
+    pass
 
 class ProductivityApp(App):
     def build(self):
