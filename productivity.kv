@@ -22,6 +22,7 @@
     CustomColorLabel:
         text: "Productivity App"
         font_size: '24sp'
+        bold: True
         size_hint: (1, None)
         height: 60
         halign: 'center'
@@ -194,20 +195,68 @@
             id: scroll_view
             size_hint: (1, 1)
 
-            BoxLayout:
+            GridLayout:
                 id: calendar_layout
+                cols: 8
+                spacing: 1
                 size_hint: (1, None)
                 height: self.minimum_height
 
                 BoxLayout:
                     id: time_column
                     orientation: 'vertical'
-                    size_hint: (0.125, None)
+                    size_hint_y: None
+                    height: self.minimum_height
+                    spacing: 1
 
-                GridLayout:
-                    id: schedule
-                    cols: 7
-                    size_hint: (0.875, None)
+                BoxLayout:
+                    id: mon_schedule
+                    orientation: 'vertical'
+                    size_hint_y: None
+                    height: self.minimum_height
+                    spacing: 1
+
+                BoxLayout:
+                    id: tue_schedule
+                    orientation: 'vertical'
+                    size_hint_y: None
+                    height: self.minimum_height
+                    spacing: 1
+
+                BoxLayout:
+                    id: wed_schedule
+                    orientation: 'vertical'
+                    size_hint_y: None
+                    height: self.minimum_height
+                    spacing: 1
+
+                BoxLayout:
+                    id: thu_schedule
+                    orientation: 'vertical'
+                    size_hint_y: None
+                    height: self.minimum_height
+                    spacing: 1
+
+                BoxLayout:
+                    id: fri_schedule
+                    orientation: 'vertical'
+                    size_hint_y: None
+                    height: self.minimum_height
+                    spacing: 1
+
+                BoxLayout:
+                    id: sat_schedule
+                    orientation: 'vertical'
+                    size_hint_y: None
+                    height: self.minimum_height
+                    spacing: 1
+
+                BoxLayout:
+                    id: sun_schedule
+                    orientation: 'vertical'
+                    size_hint_y: None
+                    height: self.minimum_height
+                    spacing: 1
 
     
 <Habit@TabbedPanelItem>:

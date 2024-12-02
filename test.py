@@ -10,6 +10,7 @@ from kivy.uix.scrollview import ScrollView
 from kivy.graphics import Color, Rectangle, RoundedRectangle
 from kivy.clock import Clock
 import calendar as cal
+from pandas import MultiIndex, DataFrame
 
 class CustomBoxLayout(BoxLayout):
     pass
@@ -56,6 +57,21 @@ class Home(TabbedPanelItem):
         Clock.schedule_once(self.get_ids, 0)
         Clock.schedule_once(self.create_header, 0)
         Clock.schedule_once(self.set_current_week, 0)
+        Clock.schedule_once(self.create_time_column, 0)
+
+    def create_time_column(self, *args):
+        for t in [cal.datetime.time(i).strftime('%H:%M') for i in range(24)]:
+            time_label = CustomColorLabel(
+                bg_color=(0.5, 0.5, 0.5, 1),
+                text=t,
+                size_hint=(1, None),
+                height=40,
+                color = (0, 0, 0, 1),
+                halign='center',
+                valign='middle'
+            )
+            time_label.bind(size=time_label.setter("text_size"))
+            self.time_column.add_widget(time_label)
     
     def set_current_week(self, *args):
         self.week = self.current_week
@@ -91,7 +107,12 @@ class Home(TabbedPanelItem):
 
     def create_header(self, *args):
         days = cal.day_abbr[:]
+        col_list = []
         for day in days:
+            col_list.append((day, 'name'))
+            col_list.append((day, 'id'))
+            col_list.append((day, 'start'))
+            col_list.append((day, 'end'))
             day_label = CustomColorLabel(
                 bg_color=(0.4, 0.4, 0.4, 1),
                 text=day, 
@@ -104,6 +125,8 @@ class Home(TabbedPanelItem):
             )
             day_label.bind(size=day_label.setter("text_size"))
             self.header_row.add_widget(day_label)
+        cols = MultiIndex.from_tuples(col_list)
+        self.week_schedule = DataFrame(columns=cols)
 
     def get_ids(self, *args):
         self.root_layout = self.ids['root_layout']
