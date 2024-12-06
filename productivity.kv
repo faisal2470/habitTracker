@@ -276,10 +276,134 @@
     text_size: self.size
 
     BoxLayout:
+        padding: 5
         canvas.before:
             Color:
                 rgba: 0.7, 0.7, 0.7, 1
             Rectangle:
                 size: self.size
                 pos: self.pos
+
+        GridLayout:
+            cols: 3
+            spacing: 2
+
+            BoxLayout:
+                size_hint_y: None
+                height: self.minimum_height
+
+                CustomColorLabel:
+                    bg_color: (0.4, 0.4, 0.4, 1)
+                    text: 'Task'
+                    bold: True
+                    text_size: self.size
+                    valign: 'middle'
+                    halign: 'center'
+                    size_hint: (1, None)
+                    height: 35
+
+                Button:
+                    text: '+'
+                    text_size: self.size
+                    valign: 'middle'
+                    halign: 'center'
+                    size_hint: (None, None)
+                    height: 35
+                    width: 35
+
+            BoxLayout:
+                size_hint_y: None
+                height: self.minimum_height
+
+                CustomColorLabel:
+                    bg_color: (0.4, 0.4, 0.4, 1)
+                    text: 'Appointment'
+                    bold: True
+                    text_size: self.size
+                    valign: 'middle'
+                    halign: 'center'
+                    size_hint: (1, None)
+                    height: 35
+
+                Button:
+                    text: '+'
+                    text_size: self.size
+                    valign: 'middle'
+                    halign: 'center'
+                    size_hint: (None, None)
+                    height: 35
+                    width: 35
+
+            BoxLayout:
+                size_hint_y: None
+                height: self.minimum_height
+
+                CustomColorLabel:
+                    bg_color: (0.4, 0.4, 0.4, 1)
+                    text: 'Event'
+                    bold: True
+                    text_size: self.size
+                    valign: 'middle'
+                    halign: 'center'
+                    size_hint: (1, None)
+                    height: 35
+
+                Button:
+                    text: '+'
+                    text_size: self.size
+                    valign: 'middle'
+                    halign: 'center'
+                    size_hint: (None, None)
+                    height: 35
+                    width: 35
+
+            ScrollView:
+                id: task_scroll
+                size_hint: (1, 1)
+
+                BoxLayout:
+                    id: tasks
+                    canvas.before:
+                        Color:
+                            rgba: 0.6, 0.6, 0.6, 1
+                        Rectangle:
+                            size: self.size
+                            pos: self.pos
+
+                    height: self.minimum_height
+
+            ScrollView:
+                id: appointment_scroll
+                size_hint: (1, 1)
+
+                BoxLayout:
+                    id: appointments
+                    canvas.before:
+                        Color:
+                            rgba: 0.6, 0.6, 0.6, 1
+                        Rectangle:
+                            size: self.size
+                            pos: self.pos
+
+                    height: self.minimum_height
+
+            ScrollView:
+                id: event_scroll
+                size_hint: (1, 1)
+
+                BoxLayout:
+                    id: events
+                    canvas.before:
+                        Color:
+                            rgba: 0.6, 0.6, 0.6, 1
+                        Rectangle:
+                            size: self.size
+                            pos: self.pos
+
+                    height: self.minimum_height
+
+
+
+
+
 

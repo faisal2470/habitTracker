@@ -1,26 +1,22 @@
 from kivy.app import App
-from kivy.lang import Builder
-from kivy.uix.boxlayout import BoxLayout 
-from kivy.uix.gridlayout import GridLayout
+from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.tabbedpanel import TabbedPanel, TabbedPanelItem, TabbedPanelHeader
 from kivy.uix.label import Label
-from kivy.uix.textinput import TextInput
-from kivy.uix.button import Button
-from kivy.uix.scrollview import ScrollView
-from kivy.graphics import Color, Rectangle, RoundedRectangle
 from kivy.clock import Clock
 import calendar as cal
 from pandas import MultiIndex, DataFrame
 
 class CustomBoxLayout(BoxLayout):
-    pass
+    def __init__(self, **kwargs):
+        super(CustomBoxLayout, self).__init__(**kwargs)
 
 class CustomColorLabel(Label):
-    pass
+    def __init__(self, **kwargs):
+        super(CustomColorLabel, self).__init__(**kwargs)
 
 class CustomTabbedPanel(TabbedPanel):
     def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+        super(CustomTabbedPanel, self).__init__(**kwargs)
         self.bind(current_tab=self.update_tab_colors)
         self.bind(size=self.adjust_tab_width)
         self.do_default_tab = False
@@ -50,7 +46,7 @@ class CustomTabbedPanel(TabbedPanel):
 
 class Home(TabbedPanelItem):
     def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+        super(Home, self).__init__(**kwargs)
         self.today = cal.datetime.datetime.now()
         self.current_week = int(self.today.strftime('%W'))
         self.current_year = int(self.today.strftime('%Y'))
@@ -137,10 +133,12 @@ class Home(TabbedPanelItem):
 
 
 class Habit(TabbedPanelItem):
-    pass
+    def __init__(self, **kwargs):
+        super(Habit, self).__init__(**kwargs)
 
 class Todo(TabbedPanelItem):
-    pass
+    def __init__(self, **kwargs):
+        super(Todo, self).__init__(**kwargs)
 
 class ProductivityApp(App):
     def build(self):
