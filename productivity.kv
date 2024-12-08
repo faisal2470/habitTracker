@@ -310,6 +310,7 @@
                     size_hint: (None, None)
                     height: 35
                     width: 35
+                    on_press: root.add_todo('Add Task')
 
             BoxLayout:
                 size_hint_y: None
@@ -403,7 +404,196 @@
                     height: self.minimum_height
 
 
+<AddToDo@Popup>:
+    size_hint: None, None
+    height: 450
+    width: 300
 
+    BoxLayout:
+        orientation: "vertical"
+        padding: [0, 10, 0, 0]
+
+        BoxLayout:
+            orientation: 'vertical'
+
+            TextInput:
+                id: todo_title
+                hint_text: 'Title'
+                size_hint_y: None
+                height: 35
+                multiline: False
+
+            BoxLayout:
+                size_hint_y: None
+                height: self.minimum_height
+                orientation: 'vertical'
+                
+                Label:
+                    text: 'Start'
+                    text_size: self.size
+                    size_hint: (1, None)
+                    height: 25
+
+                MDSeparator:
+                    height: 1
+                    color: 1, 1, 1, 1
+
+                GridLayout:
+                    cols: 2
+                    size_hint_y: None
+                    height: 35
+                    padding: [0, 5, 0, 0]
+
+                    BoxLayout:
+                        spacing: 5
+                        TextInput:
+                            hint_text: 'DD/MM/YYYY'
+                            size_hint_x: None
+                            width: 110
+                            multiline: False
+
+                        MDFlatButton:
+                            size_hint: None, None
+                            size: "30dp", "30dp"  # Adjust width and height as needed
+                            line_color: 1, 1, 1, 1  # White border color
+                            text_color: 1, 1, 1, 1  # White icon color
+                            radius: [10, 10, 10, 10]  # Rounded corners
+                            theme_text_color: "Custom"
+
+                            MDIcon:
+                                icon: "calendar"
+                                halign: "center"
+                                theme_text_color: "Custom"
+                                text_color: 1, 1, 1, 1  # White icon color
+
+                    BoxLayout:
+                        padding: [25, 0, 0, 0]
+                        spacing: 5
+                        TextInput:
+                            hint_text: 'HH:MM'
+                            size_hint_x: None
+                            width: 70
+                            multiline: False
+
+                        MDFlatButton:
+                            size_hint: None, None
+                            size: "30dp", "30dp"  # Adjust width and height as needed
+                            line_color: 1, 1, 1, 1  # White border color
+                            text_color: 1, 1, 1, 1  # White icon color
+                            radius: [10, 10, 10, 10]  # Rounded corners
+                            theme_text_color: "Custom"
+
+                            MDIcon:
+                                icon: "clock"
+                                halign: "center"
+                                theme_text_color: "Custom"
+                                text_color: 1, 1, 1, 1  # White icon color
+                
+            BoxLayout:
+                size_hint_y: None
+                height: self.minimum_height
+                orientation: 'vertical'
+                
+                Label:
+                    text: 'End'
+                    text_size: self.size
+                    size_hint: (1, None)
+                    height: 25
+
+                MDSeparator:
+                    height: 1
+                    color: 1, 1, 1, 1
+
+                GridLayout:
+                    cols: 2
+                    size_hint_y: None
+                    height: 35
+                    padding: [0, 5, 0, 0]
+
+                    BoxLayout:
+                        spacing: 5
+                        TextInput:
+                            hint_text: 'DD/MM/YYYY'
+                            size_hint_x: None
+                            width: 110
+                            multiline: False
+
+                        MDFlatButton:
+                            size_hint: None, None
+                            size: "30dp", "30dp"  # Adjust width and height as needed
+                            line_color: 1, 1, 1, 1  # White border color
+                            text_color: 1, 1, 1, 1  # White icon color
+                            radius: [10, 10, 10, 10]  # Rounded corners
+                            theme_text_color: "Custom"
+
+                            MDIcon:
+                                icon: "calendar"
+                                halign: "center"
+                                theme_text_color: "Custom"
+                                text_color: 1, 1, 1, 1  # White icon color
+
+                    BoxLayout:
+                        padding: [25, 0, 0, 0]
+                        spacing: 5
+                        TextInput:
+                            hint_text: 'HH:MM'
+                            size_hint_x: None
+                            width: 70
+                            multiline: False
+
+                        MDFlatButton:
+                            size_hint: None, None
+                            size: "30dp", "30dp"  # Adjust width and height as needed
+                            line_color: 1, 1, 1, 1  # White border color
+                            text_color: 1, 1, 1, 1  # White icon color
+                            radius: [10, 10, 10, 10]  # Rounded corners
+                            theme_text_color: "Custom"
+
+                            MDIcon:
+                                icon: "clock"
+                                halign: "center"
+                                theme_text_color: "Custom"
+                                text_color: 1, 1, 1, 1  # White icon color
+
+                
+                
+            BoxLayout:
+                
+
+        
+        GridLayout:
+            size_hint: (1, None)
+            cols: 2
+            spacing: 5
+            height: self.minimum_height
+
+            MDFlatButton:
+                size_hint: 1, None
+                height: "40dp"  # Adjust width and height as needed
+                line_color: 1, 1, 1, 1  # White border color
+                text_color: 1, 1, 1, 1  # White icon color
+                radius: [10, 10, 10, 10]  # Rounded corners
+                theme_text_color: "Custom"
+
+                MDIcon:
+                    icon: "check"
+                    halign: "center"
+                    theme_text_color: "Custom"
+                    text_color: 1, 1, 1, 1  # White icon color
+
+            MDFlatButton:
+                size_hint: 1, None
+                height: "40dp"  # Adjust width and height as needed
+                line_color: 1, 1, 1, 1  # White border color
+                text_color: 1, 1, 1, 1  # White icon color
+                radius: [10, 10, 10, 10]  # Rounded corners
+                theme_text_color: "Custom"
+
+                MDIcon:
+                    icon: "close"
+                    halign: "center"
+                    theme_text_color: "Custom"
+                    text_color: 1, 1, 1, 1  # White icon color
 
 
 

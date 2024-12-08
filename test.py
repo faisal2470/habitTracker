@@ -1,7 +1,8 @@
-from kivy.app import App
+from kivymd.app import MDApp
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.tabbedpanel import TabbedPanel, TabbedPanelItem, TabbedPanelHeader
 from kivy.uix.label import Label
+from kivy.uix.popup import Popup
 from kivy.clock import Clock
 import calendar as cal
 from pandas import MultiIndex, DataFrame
@@ -13,6 +14,14 @@ class CustomBoxLayout(BoxLayout):
 class CustomColorLabel(Label):
     def __init__(self, **kwargs):
         super(CustomColorLabel, self).__init__(**kwargs)
+
+class AddToDo(Popup):
+    def __init__(self, **kwargs):
+        super(AddToDo, self).__init__(**kwargs)
+        Clock.schedule_once(self.get_ids, 0)
+
+    def get_ids(self, *args):
+        self.todo_title = self.ids['todo_title']
 
 class CustomTabbedPanel(TabbedPanel):
     def __init__(self, **kwargs):
@@ -140,7 +149,13 @@ class Todo(TabbedPanelItem):
     def __init__(self, **kwargs):
         super(Todo, self).__init__(**kwargs)
 
-class ProductivityApp(App):
+    def add_todo(self, todo_type, *args):
+        popup = AddToDo(
+            title = todo_type
+        )
+        popup.open()
+
+class ProductivityApp(MDApp):
     def build(self):
         self.root_layout = CustomBoxLayout()
         self.get_ids()
