@@ -6,6 +6,7 @@ from kivy.uix.popup import Popup
 from kivy.clock import Clock
 import calendar as cal
 from pandas import MultiIndex, DataFrame
+from kivy.graphics import Color, Line
 
 class CustomBoxLayout(BoxLayout):
     def __init__(self, **kwargs):
@@ -14,14 +15,6 @@ class CustomBoxLayout(BoxLayout):
 class CustomColorLabel(Label):
     def __init__(self, **kwargs):
         super(CustomColorLabel, self).__init__(**kwargs)
-
-class AddToDo(Popup):
-    def __init__(self, **kwargs):
-        super(AddToDo, self).__init__(**kwargs)
-        Clock.schedule_once(self.get_ids, 0)
-
-    def get_ids(self, *args):
-        self.todo_title = self.ids['todo_title']
 
 class CustomTabbedPanel(TabbedPanel):
     def __init__(self, **kwargs):
@@ -149,11 +142,142 @@ class Todo(TabbedPanelItem):
     def __init__(self, **kwargs):
         super(Todo, self).__init__(**kwargs)
 
-    def add_todo(self, todo_type, *args):
+    def open_todo_popup(self, todo_type, *args):
         popup = AddToDo(
+            on_submit = self.get_todo,
             title = todo_type
         )
         popup.open()
+
+    def get_todo(self, task, *args):
+        print(task)
+
+class AddToDo(Popup):
+    def __init__(self, on_submit, **kwargs):
+        super(AddToDo, self).__init__(**kwargs)
+        self.on_submit = on_submit
+        Clock.schedule_once(self.get_ids, 0)
+
+    def get_ids(self, *args):
+        self.todo_title = self.ids['todo_title']
+        self.start_date = self.ids['start_date']
+        self.start_time = self.ids['start_time']
+        self.end_time = self.ids['end_time']
+        self.end_date = self.ids['end_date']
+
+    def reset_border_color(self, instance, colour):
+        with instance.canvas.after:
+            instance.canvas.after.clear()
+            Color(*colour)  # Set border color to white
+            Line(width=1, rectangle=(instance.x, instance.y, instance.width, instance.height))
+
+    def submit_todo(self, *args):
+        task = {}
+        err = 0
+        f = 1
+        if self.validate_task(self.todo_title.text, 'title'):
+            task['title'] = self.todo_title.text
+        else:
+            self.reset_border_color(self.todo_title, (1, 0, 0, 1))
+            print('Empty Title')
+            err = 1
+        
+        if self.validate_task(self.start_date.text, 'date'):
+            start_date = self.start_date.text
+        else:
+            self.reset_border_color(self.start_date, (1, 0, 0, 1))
+            print('Invalid Format')
+            f = 0
+            start_date = ''
+            err = 1 
+        
+        if self.validate_task(self.end_date.text, 'date'):
+            end_date = self.end_date.text
+        else:
+            self.reset_border_color(self.end_date, (1, 0, 0, 1))
+            print('Invalid Format')
+            f = 0
+            end_date = ''
+            err = 1
+
+        if self.validate_task(self.start_time.text, 'time'):
+            start_time = self.start_time.text
+        else:
+            self.reset_border_color(self.start_time, (1, 0, 0, 1))
+            print('Invalid Format')
+            f = 0
+            start_time = ''
+            err = 1
+
+        if self.validate_task(self.end_time.text, 'time'):
+            end_time = self.end_time.text
+        else:
+            self.reset_border_color(self.end_time, (1, 0, 0, 1))
+            print('Invalid Format')
+            f = 0
+            end_time = ''
+            err = 1
+        
+        start = ' '.join([start_date, start_time])
+        end = ' '.join([end_date, end_time])
+
+        if len(start) > 12:
+            task['start'] = cal.datetime.datetime.strptime(start, '%d/%m/%Y %H:%M')
+        elif len(start) > 6:
+            task['start'] = cal.datetime.datetime.strptime(start, '%d/%m/%Y ')
+        elif len(start) > 3:
+            self.reset_border_color(self.start_date, (1, 0, 0, 1))
+            if f:
+                print('Input Date')
+                err = 1
+        else:
+            task['start'] = 0
+
+        if len(end) > 12:
+            task['end'] = cal.datetime.datetime.strptime(end, '%d/%m/%Y %H:%M')
+        elif len(end) > 6:
+            task['end'] = cal.datetime.datetime.strptime(end, '%d/%m/%Y ')
+        elif len(end) > 3:
+            self.reset_border_color(self.end_date, (1, 0, 0, 1))
+            if f:
+                print('Input Date')
+                err = 1
+        else:
+            task['end'] = 0
+
+        if err:
+            return
+        
+        self.on_submit(task)
+        self.dismiss()
+
+    def validate_task(self, text, data_type):
+        if data_type == 'title':
+            if len(text) == 0:
+                return False
+            else:
+                return True
+            
+        if data_type == 'date':
+            if len(text) != 0:
+                try:
+                    cal.datetime.datetime.strptime(text, '%d/%m/%Y')
+                    return True
+                except:
+                    return False
+            else:
+                return True
+            
+        if data_type == 'time':
+            if len(text) != 0:
+                try:
+                    cal.datetime.datetime.strptime(text, '%H:%M')
+                    return True
+                except:
+                    return False
+            else:
+                return True
+
 
 class ProductivityApp(MDApp):
     def build(self):
