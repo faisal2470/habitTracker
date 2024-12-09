@@ -310,7 +310,7 @@
                     size_hint: (None, None)
                     height: 35
                     width: 35
-                    on_press: root.add_todo('Add Task')
+                    on_press: root.open_todo_popup('Add Task')
 
             BoxLayout:
                 size_hint_y: None
@@ -334,6 +334,7 @@
                     size_hint: (None, None)
                     height: 35
                     width: 35
+                    on_press: root.open_todo_popup('Add Appointment')
 
             BoxLayout:
                 size_hint_y: None
@@ -357,6 +358,7 @@
                     size_hint: (None, None)
                     height: 35
                     width: 35
+                    on_press: root.open_todo_popup('Add Event')
 
             ScrollView:
                 id: task_scroll
@@ -415,13 +417,25 @@
 
         BoxLayout:
             orientation: 'vertical'
+            spacing: 5
 
             TextInput:
                 id: todo_title
-                hint_text: 'Title'
+                canvas.after:
+                    Color:
+                        rgba: 1, 1, 1, 1
+                    Line:
+                        width: 1 
+                        rectangle: self.x, self.y, self.width, self.height
+
+                background_color: 0, 0, 0, 0
+                foreground_color: 1, 1, 1, 1
+                cursor_color: 1, 1, 1, 1
+                hint_text: 'Title...'
                 size_hint_y: None
                 height: 35
                 multiline: False
+                on_text: root.reset_border_color(self, (1, 1, 1, 1))
 
             BoxLayout:
                 size_hint_y: None
@@ -441,16 +455,28 @@
                 GridLayout:
                     cols: 2
                     size_hint_y: None
-                    height: 35
-                    padding: [0, 5, 0, 0]
+                    height: 37
+                    padding: [0, 7, 0, 0]
 
                     BoxLayout:
                         spacing: 5
                         TextInput:
+                            id: start_date
+                            canvas.after:
+                                Color:
+                                    rgba: 1, 1, 1, 1
+                                Line:
+                                    width: 1 
+                                    rectangle: self.x, self.y, self.width, self.height
+
+                            background_color: 0, 0, 0, 0
+                            foreground_color: 1, 1, 1, 1
+                            cursor_color: 1, 1, 1, 1
                             hint_text: 'DD/MM/YYYY'
                             size_hint_x: None
                             width: 110
                             multiline: False
+                            on_text: root.reset_border_color(self, (1, 1, 1, 1))
 
                         MDFlatButton:
                             size_hint: None, None
@@ -470,10 +496,22 @@
                         padding: [25, 0, 0, 0]
                         spacing: 5
                         TextInput:
+                            id: start_time
+                            canvas.after:
+                                Color:
+                                    rgba: 1, 1, 1, 1
+                                Line:
+                                    width: 1 
+                                    rectangle: self.x, self.y, self.width, self.height
+
+                            background_color: 0, 0, 0, 0
+                            foreground_color: 1, 1, 1, 1
+                            cursor_color: 1, 1, 1, 1
                             hint_text: 'HH:MM'
                             size_hint_x: None
                             width: 70
                             multiline: False
+                            on_text: root.reset_border_color(self, (1, 1, 1, 1))
 
                         MDFlatButton:
                             size_hint: None, None
@@ -507,16 +545,28 @@
                 GridLayout:
                     cols: 2
                     size_hint_y: None
-                    height: 35
-                    padding: [0, 5, 0, 0]
+                    height: 37
+                    padding: [0, 7, 0, 0]
 
                     BoxLayout:
                         spacing: 5
                         TextInput:
+                            id: end_date
+                            canvas.after:
+                                Color:
+                                    rgba: 1, 1, 1, 1
+                                Line:
+                                    width: 1 
+                                    rectangle: self.x, self.y, self.width, self.height
+
+                            background_color: 0, 0, 0, 0
+                            foreground_color: 1, 1, 1, 1
+                            cursor_color: 1, 1, 1, 1
                             hint_text: 'DD/MM/YYYY'
                             size_hint_x: None
                             width: 110
                             multiline: False
+                            on_text: root.reset_border_color(self, (1, 1, 1, 1))
 
                         MDFlatButton:
                             size_hint: None, None
@@ -536,10 +586,22 @@
                         padding: [25, 0, 0, 0]
                         spacing: 5
                         TextInput:
+                            id: end_time
+                            canvas.after:
+                                Color:
+                                    rgba: 1, 1, 1, 1
+                                Line:
+                                    width: 1 
+                                    rectangle: self.x, self.y, self.width, self.height
+
+                            background_color: 0, 0, 0, 0
+                            foreground_color: 1, 1, 1, 1
+                            cursor_color: 1, 1, 1, 1
                             hint_text: 'HH:MM'
                             size_hint_x: None
                             width: 70
                             multiline: False
+                            on_text: root.reset_border_color(self, (1, 1, 1, 1))
 
                         MDFlatButton:
                             size_hint: None, None
@@ -555,9 +617,17 @@
                                 theme_text_color: "Custom"
                                 text_color: 1, 1, 1, 1  # White icon color
 
-                
-                
+                Label:
+                    text: ''
+                    size_hint: (1, None)
+                    height: 17
+
+                MDSeparator:
+                    height: 1
+                    color: 0.25, 0.25, 0.25, 1
+
             BoxLayout:
+                    
                 
 
         
@@ -574,6 +644,7 @@
                 text_color: 1, 1, 1, 1  # White icon color
                 radius: [10, 10, 10, 10]  # Rounded corners
                 theme_text_color: "Custom"
+                on_press: root.submit_todo()
 
                 MDIcon:
                     icon: "check"
@@ -588,6 +659,7 @@
                 text_color: 1, 1, 1, 1  # White icon color
                 radius: [10, 10, 10, 10]  # Rounded corners
                 theme_text_color: "Custom"
+                on_press: root.dismiss()
 
                 MDIcon:
                     icon: "close"
