@@ -7,22 +7,13 @@ from kivy.clock import Clock
 import calendar as cal
 from pandas import MultiIndex, DataFrame
 from kivy.graphics import Color, Line
-import sqlite3
+from db_manager import DatabaseManager
 
-######################################################################################
-###############                                                        ###############
-##########                             DATABASE                             ##########
-###############                                                        ###############
-######################################################################################
-class DatabaseManager:
-    def __init__(self, db_name='productivity_app.db'):
-        self.db_name = db_name
-
-######################################################################################
-###############                                                        ###############
-##########                           USER INTERFACE                         ##########
-###############                                                        ###############
-######################################################################################
+##########################################################
+###############                            ###############
+##########            USER INTERFACE            ##########
+###############                            ###############
+##########################################################
 class CustomBoxLayout(BoxLayout):
     def __init__(self, **kwargs):
         super(CustomBoxLayout, self).__init__(**kwargs)
@@ -336,6 +327,7 @@ class AddToDo(Popup):
 class ProductivityApp(MDApp):
     def build(self):
         self.root_layout = CustomBoxLayout()
+        self.db_manager = DatabaseManager()
         self.get_ids()
 
         return self.root_layout
