@@ -1,13 +1,13 @@
 <CustomBoxLayout@BoxLayout>:
     canvas.before:
         Color:
-            rgba: 0.7, 0.7, 0.7, 1
+            rgba: (0.7, 0.7, 0.7, 1)
         Rectangle:
             size: self.size
             pos: self.pos
 
 <CustomColorLabel@Label>:
-    bg_color: (0.5, 0.5, 0.2, 1)
+    bg_color: (0.15, 0.15, 0.15, 1)
     canvas.before:
         Color:
             rgba: root.bg_color
@@ -52,7 +52,7 @@
         padding: 5
         canvas.before:
             Color:
-                rgba: 0.7, 0.7, 0.7, 1
+                rgba: (0.7, 0.7, 0.7, 1)
             Rectangle:
                 size: self.size
                 pos: self.pos
@@ -310,7 +310,7 @@
                     size_hint: (None, None)
                     height: 35
                     width: 35
-                    on_press: root.open_todo_popup('Add Task')
+                    on_press: root.open_todo_popup('Task')
 
             BoxLayout:
                 size_hint_y: None
@@ -334,7 +334,7 @@
                     size_hint: (None, None)
                     height: 35
                     width: 35
-                    on_press: root.open_todo_popup('Add Appointment')
+                    on_press: root.open_todo_popup('Appointment')
 
             BoxLayout:
                 size_hint_y: None
@@ -358,7 +358,7 @@
                     size_hint: (None, None)
                     height: 35
                     width: 35
-                    on_press: root.open_todo_popup('Add Event')
+                    on_press: root.open_todo_popup('Event')
 
             ScrollView:
                 id: task_scroll
@@ -409,7 +409,7 @@
 <AddToDo@Popup>:
     size_hint: None, None
     height: 450
-    width: 300
+    width: 400
 
     BoxLayout:
         orientation: "vertical"
@@ -417,25 +417,58 @@
 
         BoxLayout:
             orientation: 'vertical'
-            spacing: 5
+            spacing: 3
 
-            TextInput:
-                id: todo_title
-                canvas.after:
-                    Color:
-                        rgba: 1, 1, 1, 1
-                    Line:
-                        width: 1 
-                        rectangle: self.x, self.y, self.width, self.height
-
-                background_color: 0, 0, 0, 0
-                foreground_color: 1, 1, 1, 1
-                cursor_color: 1, 1, 1, 1
-                hint_text: 'Title...'
+            BoxLayout:
+                spacing: 5
                 size_hint_y: None
-                height: 35
-                multiline: False
-                on_text: root.reset_border_color(self, (1, 1, 1, 1))
+                height: self.minimum_height
+
+                TextInput:
+                    id: todo_title
+                    canvas.after:
+                        Color:
+                            rgba: 1, 1, 1, 1
+                        Line:
+                            width: 1 
+                            rectangle: self.x, self.y, self.width, self.height
+
+                    background_color: 0, 0, 0, 0
+                    foreground_color: 1, 1, 1, 1
+                    cursor_color: 1, 1, 1, 1
+                    hint_text: 'Title...'
+                    size_hint_y: None
+                    height: 35
+                    multiline: False
+                    on_text: root.reset_border_color(self, (1, 1, 1, 1), 'ti')
+
+                MDFlatButton:
+                    line_color: 1, 1, 1, 1  # White border color
+                    text_color: 1, 1, 1, 1  # White icon color
+                    size_hint: None, None
+                    size: "35dp", "35dp"
+                    radius: [10, 10, 10, 10]  # Rounded corners
+                    theme_text_color: "Custom"
+                    on_press: root.toggle_priority()
+
+                    MDLabel:
+                        id: priority_label
+                        text: "N"
+                        halign: "center"
+                        valign: "middle"
+                        theme_text_color: "Custom"
+                        text_color: 1, 1, 1, 1
+                        size_hint: None, None
+                        size: self.parent.size  # Match size of the button
+
+            Label:
+                id: title_error
+                color: 1, 0, 0, 1
+                font_size: '11sp'
+                bold: True
+                text_size: self.size
+                size_hint_y: None
+                height: 11
 
             BoxLayout:
                 size_hint_y: None
@@ -445,8 +478,9 @@
                 Label:
                     text: 'Start'
                     text_size: self.size
+                    font_size: '14sp'
                     size_hint: (1, None)
-                    height: 25
+                    height: 16
 
                 MDSeparator:
                     height: 1
@@ -455,8 +489,9 @@
                 GridLayout:
                     cols: 2
                     size_hint_y: None
-                    height: 37
+                    height: 51
                     padding: [0, 7, 0, 0]
+                    spacing: 3
 
                     BoxLayout:
                         spacing: 5
@@ -474,9 +509,9 @@
                             cursor_color: 1, 1, 1, 1
                             hint_text: 'DD/MM/YYYY'
                             size_hint_x: None
-                            width: 110
+                            width: 135
                             multiline: False
-                            on_text: root.reset_border_color(self, (1, 1, 1, 1))
+                            on_text: root.reset_border_color(self, (1, 1, 1, 1), 'sd')
 
                         MDFlatButton:
                             size_hint: None, None
@@ -493,8 +528,8 @@
                                 text_color: 1, 1, 1, 1  # White icon color
 
                     BoxLayout:
-                        padding: [25, 0, 0, 0]
                         spacing: 5
+                        padding: [18, 0, 0, 0]
                         TextInput:
                             id: start_time
                             canvas.after:
@@ -509,9 +544,9 @@
                             cursor_color: 1, 1, 1, 1
                             hint_text: 'HH:MM'
                             size_hint_x: None
-                            width: 70
+                            width: 100
                             multiline: False
-                            on_text: root.reset_border_color(self, (1, 1, 1, 1))
+                            on_text: root.reset_border_color(self, (1, 1, 1, 1), 'st')
 
                         MDFlatButton:
                             size_hint: None, None
@@ -526,6 +561,28 @@
                                 halign: "center"
                                 theme_text_color: "Custom"
                                 text_color: 1, 1, 1, 1  # White icon color
+
+                    Label:
+                        id: sd_error
+                        color: 1, 0, 0, 1
+                        font_size: '11sp'
+                        bold: True
+                        text_size: self.size
+                        size_hint_y: None
+                        height: 11     
+
+                    BoxLayout:
+                        size_hint_y: None
+                        height: self.minimum_height
+                        padding: [18, 0, 0, 0]
+                        Label:
+                            id: st_error
+                            color: 1, 0, 0, 1
+                            font_size: '11sp'
+                            bold: True
+                            text_size: self.size
+                            size_hint_y: None
+                            height: 11                     
                 
             BoxLayout:
                 size_hint_y: None
@@ -535,8 +592,9 @@
                 Label:
                     text: 'End'
                     text_size: self.size
+                    font_size: '14sp'
                     size_hint: (1, None)
-                    height: 25
+                    height: 16
 
                 MDSeparator:
                     height: 1
@@ -545,7 +603,8 @@
                 GridLayout:
                     cols: 2
                     size_hint_y: None
-                    height: 37
+                    height: 51
+                    spacing: 3
                     padding: [0, 7, 0, 0]
 
                     BoxLayout:
@@ -564,9 +623,9 @@
                             cursor_color: 1, 1, 1, 1
                             hint_text: 'DD/MM/YYYY'
                             size_hint_x: None
-                            width: 110
+                            width: 135
                             multiline: False
-                            on_text: root.reset_border_color(self, (1, 1, 1, 1))
+                            on_text: root.reset_border_color(self, (1, 1, 1, 1), 'ed')
 
                         MDFlatButton:
                             size_hint: None, None
@@ -583,8 +642,8 @@
                                 text_color: 1, 1, 1, 1  # White icon color
 
                     BoxLayout:
-                        padding: [25, 0, 0, 0]
                         spacing: 5
+                        padding: [18, 0, 0, 0]
                         TextInput:
                             id: end_time
                             canvas.after:
@@ -599,9 +658,9 @@
                             cursor_color: 1, 1, 1, 1
                             hint_text: 'HH:MM'
                             size_hint_x: None
-                            width: 70
+                            width: 100
                             multiline: False
-                            on_text: root.reset_border_color(self, (1, 1, 1, 1))
+                            on_text: root.reset_border_color(self, (1, 1, 1, 1), 'et')
 
                         MDFlatButton:
                             size_hint: None, None
@@ -617,14 +676,37 @@
                                 theme_text_color: "Custom"
                                 text_color: 1, 1, 1, 1  # White icon color
 
+                    Label:
+                        id: ed_error
+                        color: 1, 0, 0, 1
+                        font_size: '11sp'
+                        bold: True
+                        text_size: self.size
+                        size_hint_y: None
+                        height: 11     
+
+                    BoxLayout:
+                        size_hint_y: None
+                        height: self.minimum_height
+                        padding: [18, 0, 0, 0]
+                        Label:
+                            id: et_error
+                            color: 1, 0, 0, 1
+                            font_size: '11sp'
+                            bold: True
+                            text_size: self.size
+                            size_hint_y: None
+                            height: 11  
+
                 Label:
                     text: ''
                     size_hint: (1, None)
-                    height: 17
+                    height: 7
 
                 MDSeparator:
                     height: 1
                     color: 0.25, 0.25, 0.25, 1
+                
 
             BoxLayout:
                     

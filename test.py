@@ -7,7 +7,22 @@ from kivy.clock import Clock
 import calendar as cal
 from pandas import MultiIndex, DataFrame
 from kivy.graphics import Color, Line
+import sqlite3
 
+######################################################################################
+###############                                                        ###############
+##########                             DATABASE                             ##########
+###############                                                        ###############
+######################################################################################
+class DatabaseManager:
+    def __init__(self, db_name='productivity_app.db'):
+        self.db_name = db_name
+
+######################################################################################
+###############                                                        ###############
+##########                           USER INTERFACE                         ##########
+###############                                                        ###############
+######################################################################################
 class CustomBoxLayout(BoxLayout):
     def __init__(self, **kwargs):
         super(CustomBoxLayout, self).__init__(**kwargs)
@@ -143,9 +158,16 @@ class Todo(TabbedPanelItem):
         super(Todo, self).__init__(**kwargs)
 
     def open_todo_popup(self, todo_type, *args):
+        if todo_type == 'Task':
+            tid = 'TA.'
+        if todo_type == 'Appointment':
+            tid = 'AP.'
+        if todo_type == 'Event':
+            tid = 'EV.'
         popup = AddToDo(
             on_submit = self.get_todo,
-            title = todo_type
+            task_id = tid,
+            title = f'Add {todo_type}'
         )
         popup.open()
 
@@ -153,9 +175,10 @@ class Todo(TabbedPanelItem):
         print(task)
 
 class AddToDo(Popup):
-    def __init__(self, on_submit, **kwargs):
+    def __init__(self, on_submit, task_id, **kwargs):
         super(AddToDo, self).__init__(**kwargs)
         self.on_submit = on_submit
+        self.task_id = task_id
         Clock.schedule_once(self.get_ids, 0)
 
     def get_ids(self, *args):
@@ -164,8 +187,28 @@ class AddToDo(Popup):
         self.start_time = self.ids['start_time']
         self.end_time = self.ids['end_time']
         self.end_date = self.ids['end_date']
+        self.priority = self.ids['priority_label']
+        self.title_error = self.ids['title_error']
+        self.sd_error = self.ids['sd_error']
+        self.st_error = self.ids['st_error']
+        self.ed_error = self.ids['ed_error']
+        self.et_error = self.ids['et_error']
 
-    def reset_border_color(self, instance, colour):
+    def toggle_priority(self):
+        self.priority.text = "P" if self.priority.text == "N" else "N"
+
+    def reset_border_color(self, instance, colour, error):
+        if error == 'ti':
+            self.title_error.text = ''
+        if error == 'sd':
+            self.sd_error.text = ''
+        elif error == 'st':
+            self.st_error.text = ''
+        elif error == 'ed':
+            self.ed_error.text = ''
+        elif error == 'et':
+            self.et_error.text = ''
+
         with instance.canvas.after:
             instance.canvas.after.clear()
             Color(*colour)  # Set border color to white
@@ -173,47 +216,48 @@ class AddToDo(Popup):
 
     def submit_todo(self, *args):
         task = {}
+        task['id'] = self.task_id
         err = 0
         f = 1
         if self.validate_task(self.todo_title.text, 'title'):
             task['title'] = self.todo_title.text
         else:
-            self.reset_border_color(self.todo_title, (1, 0, 0, 1))
-            print('Empty Title')
+            self.reset_border_color(self.todo_title, (1, 0, 0, 1), 'ti')
+            self.title_error.text = 'Empty Title'
             err = 1
         
         if self.validate_task(self.start_date.text, 'date'):
             start_date = self.start_date.text
         else:
-            self.reset_border_color(self.start_date, (1, 0, 0, 1))
-            print('Invalid Format')
+            self.reset_border_color(self.start_date, (1, 0, 0, 1), 'sd')
+            self.sd_error.text = 'Invalid Format'
             f = 0
             start_date = ''
             err = 1 
-        
-        if self.validate_task(self.end_date.text, 'date'):
-            end_date = self.end_date.text
-        else:
-            self.reset_border_color(self.end_date, (1, 0, 0, 1))
-            print('Invalid Format')
-            f = 0
-            end_date = ''
-            err = 1
 
         if self.validate_task(self.start_time.text, 'time'):
             start_time = self.start_time.text
         else:
-            self.reset_border_color(self.start_time, (1, 0, 0, 1))
-            print('Invalid Format')
+            self.reset_border_color(self.start_time, (1, 0, 0, 1), 'st')
+            self.st_error.text = 'Invalid Format'
             f = 0
             start_time = ''
+            err = 1
+        
+        if self.validate_task(self.end_date.text, 'date'):
+            end_date = self.end_date.text
+        else:
+            self.reset_border_color(self.end_date, (1, 0, 0, 1), 'ed')
+            self.ed_error.text = 'Invalid Format'
+            f = 0
+            end_date = ''
             err = 1
 
         if self.validate_task(self.end_time.text, 'time'):
             end_time = self.end_time.text
         else:
-            self.reset_border_color(self.end_time, (1, 0, 0, 1))
-            print('Invalid Format')
+            self.reset_border_color(self.end_time, (1, 0, 0, 1), 'et')
+            self.et_error.text = 'Invalid Format'
             f = 0
             end_time = ''
             err = 1
@@ -223,31 +267,41 @@ class AddToDo(Popup):
 
         if len(start) > 12:
             task['start'] = cal.datetime.datetime.strptime(start, '%d/%m/%Y %H:%M')
+            self.task_id = self.task_id + task['start'].strftime('%d%m%Y%H%M') + '.'
         elif len(start) > 6:
             task['start'] = cal.datetime.datetime.strptime(start, '%d/%m/%Y ')
+            self.task_id = self.task_id + task['start'].strftime('%d%m%Y') + 'xxxx.'
         elif len(start) > 3:
-            self.reset_border_color(self.start_date, (1, 0, 0, 1))
+            self.reset_border_color(self.start_date, (1, 0, 0, 1), 'sd')
             if f:
-                print('Input Date')
+                self.sd_error.text = 'Input Date'
                 err = 1
         else:
             task['start'] = 0
+            self.task_id = self.task_id + 'xxxxxxxxxxxxxx.'
 
         if len(end) > 12:
             task['end'] = cal.datetime.datetime.strptime(end, '%d/%m/%Y %H:%M')
+            self.task_id = self.task_id + task['end'].strftime('%d%m%Y%H%M') + '.'
         elif len(end) > 6:
             task['end'] = cal.datetime.datetime.strptime(end, '%d/%m/%Y ')
+            self.task_id = self.task_id + task['end'].strftime('%d%m%Y') + 'xxxx.'
         elif len(end) > 3:
-            self.reset_border_color(self.end_date, (1, 0, 0, 1))
+            self.reset_border_color(self.end_date, (1, 0, 0, 1), 'ed')
             if f:
-                print('Input Date')
+                self.ed_error.text = 'Input Date'
                 err = 1
         else:
             task['end'] = 0
+            self.task_id = self.task_id + 'xxxxxxxxxxxxxx.'
 
         if err:
+            self.task_id = task['id']
             return
         
+        self.task_id += self.priority.text
+        
+        task['id'] = self.task_id
         self.on_submit(task)
         self.dismiss()
 
