@@ -6,14 +6,14 @@ from kivy.uix.popup import Popup
 from kivy.clock import Clock
 import calendar as cal
 from pandas import MultiIndex, DataFrame
-from kivy.graphics import Color, Line
+from kivy.graphics import Color, Line, RoundedRectangle
 from db_manager import DatabaseManager
 
-##########################################################
-###############                            ###############
-##########            USER INTERFACE            ##########
-###############                            ###############
-##########################################################
+##########################################################################
+###############                                            ###############
+##########                    USER INTERFACE                    ##########
+###############                                            ###############
+##########################################################################
 class CustomBoxLayout(BoxLayout):
     def __init__(self, **kwargs):
         super(CustomBoxLayout, self).__init__(**kwargs)
@@ -51,6 +51,11 @@ class CustomTabbedPanel(TabbedPanel):
                 self.switch_to(tab)
                 break
 
+############################################################
+####                                                    ####
+##                        HOME TAB                        ##
+####                                                    ####
+############################################################
 
 class Home(TabbedPanelItem):
     def __init__(self, **kwargs):
@@ -76,7 +81,7 @@ class Home(TabbedPanelItem):
             )
             time_label.bind(size=time_label.setter("text_size"))
             self.time_column.add_widget(time_label)
-    
+
     def set_current_week(self, *args):
         self.week = self.current_week
         self.year = self.current_year
@@ -119,10 +124,10 @@ class Home(TabbedPanelItem):
             col_list.append((day, 'end'))
             day_label = CustomColorLabel(
                 bg_color=(0.4, 0.4, 0.4, 1),
-                text=day, 
+                text=day,
                 color=(0, 0, 0, 1),
                 bold=True,
-                size_hint_y=None, 
+                size_hint_y=None,
                 height=25,
                 halign='center',
                 valign='middle'
@@ -139,14 +144,27 @@ class Home(TabbedPanelItem):
         self.week_num = self.ids['week_num']
         self.time_column = self.ids['time_column']
 
+###########################################################
+####                                                   ####
+##                       HABIT TAB                       ##
+####                                                   ####
+###########################################################
 
 class Habit(TabbedPanelItem):
     def __init__(self, **kwargs):
         super(Habit, self).__init__(**kwargs)
+        self.db_manager = DatabaseManager()
+
+###########################################################
+####                                                   ####
+##                       TO-DO TAB                       ##
+####                                                   ####
+###########################################################
 
 class Todo(TabbedPanelItem):
     def __init__(self, **kwargs):
         super(Todo, self).__init__(**kwargs)
+        self.db_manager = DatabaseManager()
 
     def open_todo_popup(self, todo_type, *args):
         if todo_type == 'Task':
@@ -165,11 +183,16 @@ class Todo(TabbedPanelItem):
     def get_todo(self, task, *args):
         print(task)
 
+#########################################
+#            ADD TO-DO POPUP            #
+#########################################
 class AddToDo(Popup):
     def __init__(self, on_submit, task_id, **kwargs):
         super(AddToDo, self).__init__(**kwargs)
         self.on_submit = on_submit
         self.task_id = task_id
+        self.priorities = ['N', 'L', 'M', 'H', 'N']
+        self.bgs = {'N':(0.17, 0.17, 0.17, 1), 'L':(0, 0, 1, 0.2), 'M':(0, 1, 0, 0.2), 'H':(0.5, 0, 0, 1)}
         Clock.schedule_once(self.get_ids, 0)
 
     def get_ids(self, *args):
@@ -184,9 +207,26 @@ class AddToDo(Popup):
         self.st_error = self.ids['st_error']
         self.ed_error = self.ids['ed_error']
         self.et_error = self.ids['et_error']
+        self.priority_button = self.ids['priority_button']
+        self.start_label = self.ids['start_label']
+        self.description = self.ids['description']
+        if self.task_id.startswith('AP'):
+            self.priority.text = 'H'
+            self.start_label.text += '[color=ff0000]*[/color]'
+            with self.priority_button.canvas.before:
+                    Color(*self.bgs[self.priority.text])
+                    RoundedRectangle(size=self.priority_button.size, pos=self.priority_button.pos, radius=[5, 5, 5, 5])
 
-    def toggle_priority(self):
-        self.priority.text = "P" if self.priority.text == "N" else "N"
+    def toggle_priority(self, instance):
+        if self.task_id.startswith('AP'):
+            return
+        for ind, val in enumerate(self.priorities):
+            if self.priority.text == val:
+                self.priority.text = self.priorities[ind + 1]
+                with instance.canvas.before:
+                    Color(*self.bgs[self.priority.text])
+                    RoundedRectangle(size=instance.size, pos=instance.pos, radius=[5, 5, 5, 5])
+                return
 
     def reset_border_color(self, instance, colour, error):
         if error == 'ti':
@@ -202,7 +242,7 @@ class AddToDo(Popup):
 
         with instance.canvas.after:
             instance.canvas.after.clear()
-            Color(*colour)  # Set border color to white
+            Color(*colour)
             Line(width=1, rectangle=(instance.x, instance.y, instance.width, instance.height))
 
     def submit_todo(self, *args):
@@ -216,7 +256,7 @@ class AddToDo(Popup):
             self.reset_border_color(self.todo_title, (1, 0, 0, 1), 'ti')
             self.title_error.text = 'Empty Title'
             err = 1
-        
+
         if self.validate_task(self.start_date.text, 'date'):
             start_date = self.start_date.text
         else:
@@ -224,7 +264,7 @@ class AddToDo(Popup):
             self.sd_error.text = 'Invalid Format'
             f = 0
             start_date = ''
-            err = 1 
+            err = 1
 
         if self.validate_task(self.start_time.text, 'time'):
             start_time = self.start_time.text
@@ -234,7 +274,7 @@ class AddToDo(Popup):
             f = 0
             start_time = ''
             err = 1
-        
+
         if self.validate_task(self.end_date.text, 'date'):
             end_date = self.end_date.text
         else:
@@ -252,7 +292,7 @@ class AddToDo(Popup):
             f = 0
             end_time = ''
             err = 1
-        
+
         start = ' '.join([start_date, start_time])
         end = ' '.join([end_date, end_time])
 
@@ -286,13 +326,26 @@ class AddToDo(Popup):
             task['end'] = 0
             self.task_id = self.task_id + 'xxxxxxxxxxxxxx.'
 
+        if task['id'].startswith('AP'):
+
+            if err != 1:
+                if start_date == '':
+                    err = 1
+                    self.reset_border_color(self.start_date, (1, 0, 0, 1), 'sd')
+                    self.sd_error.text = 'Set Date'
+                if start_time == '':
+                    err = 1
+                    self.reset_border_color(self.start_time, (1, 0, 0, 1), 'st')
+                    self.st_error.text = 'Set Time'
+
         if err:
             self.task_id = task['id']
             return
-        
+
         self.task_id += self.priority.text
-        
+
         task['id'] = self.task_id
+        task['description'] = self.description.text
         self.on_submit(task)
         self.dismiss()
 
@@ -302,7 +355,7 @@ class AddToDo(Popup):
                 return False
             else:
                 return True
-            
+
         if data_type == 'date':
             if len(text) != 0:
                 try:
@@ -312,7 +365,7 @@ class AddToDo(Popup):
                     return False
             else:
                 return True
-            
+
         if data_type == 'time':
             if len(text) != 0:
                 try:
@@ -323,15 +376,19 @@ class AddToDo(Popup):
             else:
                 return True
 
+##########################################################################
+###############                                            ###############
+##########                       APP BUILD                      ##########
+###############                                            ###############
+##########################################################################
 
 class ProductivityApp(MDApp):
     def build(self):
         self.root_layout = CustomBoxLayout()
-        self.db_manager = DatabaseManager()
         self.get_ids()
 
         return self.root_layout
-    
+
     def get_ids(self):
         self.home_tab = self.root_layout.ids['home_tab']
         self.habit_tab = self.root_layout.ids['habit_tab']
