@@ -1,3 +1,4 @@
+from kivy.core.window import Window
 from kivymd.app import MDApp
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.tabbedpanel import TabbedPanel, TabbedPanelItem, TabbedPanelHeader
@@ -7,7 +8,13 @@ from kivy.clock import Clock
 import calendar as cal
 from pandas import MultiIndex, DataFrame
 from kivy.graphics import Color, Line, RoundedRectangle
+from kivymd.uix.pickers import MDDatePicker, MDTimePicker
 from db_manager import DatabaseManager
+
+Window.size = (1000, 600)
+
+Window.left = (1920 - Window.width) // 2
+Window.top = (1080 - Window.height) // 2
 
 ##########################################################################
 ###############                                            ###############
@@ -85,7 +92,7 @@ class Home(TabbedPanelItem):
     def set_current_week(self, *args):
         self.week = self.current_week
         self.year = self.current_year
-        self.week_num.text = f'{self.year}, Week {self.week}'
+        self.week_num.text = f'{self.year}, W{self.week}'
         dates = self.get_dates(self.week, self.year)
         self.week_dates = [self.ids[i] for i in self.ids.keys() if i.endswith('date')]
         for ind, date in enumerate(dates):
@@ -102,7 +109,7 @@ class Home(TabbedPanelItem):
             if self.week == 0:
                 self.year -= 1
                 self.week = 52
-        self.week_num.text = f'{self.year}, Week {self.week}'
+        self.week_num.text = f'{self.year}, W{self.week}'
         dates = self.get_dates(self.week, self.year)
         self.week_dates = [self.ids[i] for i in self.ids.keys() if i.endswith('date')]
         for ind, date in enumerate(dates):
@@ -165,6 +172,12 @@ class Todo(TabbedPanelItem):
     def __init__(self, **kwargs):
         super(Todo, self).__init__(**kwargs)
         self.db_manager = DatabaseManager()
+        Clock.schedule_once(self.get_ids, 0)
+
+    def get_ids(self, *args):
+        self.task_list = self.ids['task_list']
+        self.appointment_list = self.ids['appointment_list']
+        self.event_list = self.ids['event_list']
 
     def open_todo_popup(self, todo_type, *args):
         if todo_type == 'Task':
@@ -181,7 +194,7 @@ class Todo(TabbedPanelItem):
         popup.open()
 
     def get_todo(self, task, *args):
-        print(task)
+        self.db_manager.insert_todo(task)
 
 #########################################
 #            ADD TO-DO POPUP            #
@@ -192,7 +205,7 @@ class AddToDo(Popup):
         self.on_submit = on_submit
         self.task_id = task_id
         self.priorities = ['N', 'L', 'M', 'H', 'N']
-        self.bgs = {'N':(0.17, 0.17, 0.17, 1), 'L':(0, 0, 1, 0.2), 'M':(0, 1, 0, 0.2), 'H':(0.5, 0, 0, 1)}
+        self.bgs = {'N':(0.17, 0.17, 0.17, 1), 'L':(0, 1, 0, 0.3), 'M':(0.9, 0.45, 0.0, 0.8), 'H':(0.5, 0, 0, 1)}
         Clock.schedule_once(self.get_ids, 0)
 
     def get_ids(self, *args):
@@ -216,6 +229,38 @@ class AddToDo(Popup):
             with self.priority_button.canvas.before:
                     Color(*self.bgs[self.priority.text])
                     RoundedRectangle(size=self.priority_button.size, pos=self.priority_button.pos, radius=[5, 5, 5, 5])
+
+    def show_date_picker(self, val):
+        date_picker = MDDatePicker()
+        date_picker.ids.cancel_button.radius = [4.0, 4.0, 4.0, 4.0]
+        date_picker.ids.ok_button.radius = [4.0, 4.0, 4.0, 4.0]
+        date_picker.on_save = self.on_date_selected
+        date_picker.parent_button = val
+        self.date_picker = date_picker
+        date_picker.open()
+
+    def show_time_picker(self, val):
+        time_picker = MDTimePicker()
+        time_picker.ids.cancel_button.radius = [4.0, 4.0, 4.0, 4.0]
+        time_picker.ids.ok_button.radius = [4.0, 4.0, 4.0, 4.0]
+        time_picker.on_save = self.on_time_selected
+        time_picker.val = val
+        self.time_picker = time_picker
+        time_picker.open()
+
+    def on_time_selected(self, instance):
+        if self.time_picker.val == 'st':
+            self.start_time.text = instance.strftime('%H:%M')
+        elif self.time_picker.val == 'et':
+            self.end_time.text = instance.strftime('%H:%M')
+        self.time_picker.dismiss()
+
+    def on_date_selected(self, instance, value):
+        if self.date_picker.parent_button == 'sd':
+            self.start_date.text = instance.strftime('%d/%m/%Y')
+        elif self.date_picker.parent_button == 'ed':
+            self.end_date.text = instance.strftime('%d/%m/%Y')
+        self.date_picker.dismiss()
 
     def toggle_priority(self, instance):
         if self.task_id.startswith('AP'):
@@ -345,7 +390,7 @@ class AddToDo(Popup):
         self.task_id += self.priority.text
 
         task['id'] = self.task_id
-        task['description'] = self.description.text
+        task['desc'] = self.description.text
         self.on_submit(task)
         self.dismiss()
 
@@ -376,6 +421,14 @@ class AddToDo(Popup):
             else:
                 return True
 
+##########################################
+#              TO-DO LABEL               #
+##########################################
+
+class TodoLabel(BoxLayout):
+    def __init__(self, **kwargs):
+        super(TodoLabel, self).__init__(**kwargs)
+
 ##########################################################################
 ###############                                            ###############
 ##########                       APP BUILD                      ##########
@@ -385,6 +438,7 @@ class AddToDo(Popup):
 class ProductivityApp(MDApp):
     def build(self):
         self.root_layout = CustomBoxLayout()
+        self.theme_cls.theme_style = "Dark"
         self.get_ids()
 
         return self.root_layout
