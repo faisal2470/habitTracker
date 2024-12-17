@@ -1,13 +1,13 @@
 <CustomBoxLayout@BoxLayout>:
     canvas.before:
         Color:
-            rgba: (0.7, 0.7, 0.7, 1)
+            rgba: 1, 1, 1, 1
         Rectangle:
             size: self.size
             pos: self.pos
 
 <CustomColorLabel@Label>:
-    bg_color: (0.15, 0.15, 0.15, 1)
+    bg_color: (0.0, 0.24, 0.58, 1.0)
     canvas.before:
         Color:
             rgba: root.bg_color
@@ -65,7 +65,7 @@
         padding: 5
         canvas.before:
             Color:
-                rgba: (0.7, 0.7, 0.7, 1)
+                rgba: 1, 1, 1, 1
             Rectangle:
                 size: self.size
                 pos: self.pos
@@ -284,7 +284,7 @@
     BoxLayout:
         canvas.before:
             Color:
-                rgba: 0.7, 0.7, 0.7, 1
+                rgba: 1, 1, 1, 1
             Rectangle:
                 size: self.size
                 pos: self.pos
@@ -301,23 +301,30 @@
 
     BoxLayout:
         padding: 5
+        spacing: 3
         canvas.before:
             Color:
-                rgba: 0.7, 0.7, 0.7, 1
+                rgba: 1, 1, 1, 1
             Rectangle:
                 size: self.size
                 pos: self.pos
 
-        GridLayout:
-            cols: 3
-            spacing: 2
+        BoxLayout:
+            orientation: 'vertical'
+            spacing: 3
 
             BoxLayout:
                 size_hint_y: None
                 height: self.minimum_height
 
                 CustomColorLabel:
-                    bg_color: (0.4, 0.4, 0.4, 1)
+                    bg_color: (0.5, 0, 0.5, 1)
+                    canvas.after:
+                        Color:
+                            rgba: 0.5, 0, 0.5, 1
+                        Line:
+                            width: 1
+                            rectangle: self.x, self.y, self.width, self.height
                     text: 'Task'
                     bold: True
                     text_size: self.size
@@ -326,22 +333,61 @@
                     size_hint: (1, None)
                     height: 35
 
-                Button:
-                    text: '+'
-                    text_size: self.size
-                    valign: 'middle'
-                    halign: 'center'
-                    size_hint: (None, None)
-                    height: 35
-                    width: 35
+                MDFlatButton:
+                    size_hint: None, None
+                    size: "35dp", "35dp"
+                    canvas.after:
+                        Color:
+                            rgba: 0.5, 0, 0.5, 1
+                        Line:
+                            width: 1
+                            rectangle: self.x, self.y, self.width, self.height
+                    radius: [0, 0, 0, 0]
+                    md_bg_color: [0.5, 0, 0.5, 0.3]
+                    theme_text_color: "Custom"
                     on_press: root.open_todo_popup('Task')
+
+                    MDIcon:
+                        icon: "plus"
+                        halign: "center"
+                        theme_text_color: "Custom"
+                        text_color: 0.5, 0, 0.5, 1
+
+            ScrollView:
+                size_hint: (1, 1)
+
+                BoxLayout:
+                    id: task_list
+                    padding: [0, 3, 0, 0]
+                    orientation: 'vertical'
+                    canvas.before:
+                        Color:
+                            rgba: 1, 1, 1, 1
+                        Rectangle:
+                            size: self.size
+                            pos: self.pos
+                    size_hint_y: None
+                    height: self.minimum_height
+
+                    TodoLabel:
+                        id: label_one
+
+        BoxLayout:
+            orientation: 'vertical'
+            spacing: 1
 
             BoxLayout:
                 size_hint_y: None
                 height: self.minimum_height
 
                 CustomColorLabel:
-                    bg_color: (0.4, 0.4, 0.4, 1)
+                    bg_color: (0.4, 0.26, 0.13, 1.0)
+                    canvas.after:
+                        Color:
+                            rgba: 0.4, 0.26, 0.13, 1.0
+                        Line:
+                            width: 1
+                            rectangle: self.x, self.y, self.width, self.height
                     text: 'Appointment'
                     bold: True
                     text_size: self.size
@@ -350,22 +396,57 @@
                     size_hint: (1, None)
                     height: 35
 
-                Button:
-                    text: '+'
-                    text_size: self.size
-                    valign: 'middle'
-                    halign: 'center'
-                    size_hint: (None, None)
-                    height: 35
-                    width: 35
+                MDFlatButton:
+                    size_hint: None, None
+                    size: "35dp", "35dp"
+                    canvas.after:
+                        Color:
+                            rgba: 0.4, 0.26, 0.13, 1.0
+                        Line:
+                            width: 1
+                            rectangle: self.x, self.y, self.width, self.height
+                    radius: [0, 0, 0, 0]
+                    md_bg_color: [0.4, 0.26, 0.13, 0.3]
+                    theme_text_color: "Custom"
                     on_press: root.open_todo_popup('Appointment')
+
+                    MDIcon:
+                        icon: "plus"
+                        halign: "center"
+                        theme_text_color: "Custom"
+                        text_color: 0.4, 0.26, 0.13, 1.0
+
+            ScrollView:
+                size_hint: (1, 1)
+
+                BoxLayout:
+                    id: appointment_list
+                    orientation: 'vertical'
+                    canvas.before:
+                        Color:
+                            rgba: 0.6, 0.6, 0.6, 1
+                        Rectangle:
+                            size: self.size
+                            pos: self.pos
+                    size_hint_y: None
+                    height: self.minimum_height
+
+        BoxLayout:
+            orientation: 'vertical'
+            spacing: 1
 
             BoxLayout:
                 size_hint_y: None
                 height: self.minimum_height
 
                 CustomColorLabel:
-                    bg_color: (0.4, 0.4, 0.4, 1)
+                    bg_color: (0.1, 0.1, 0.44, 1)
+                    canvas.after:
+                        Color:
+                            rgba: 0.1, 0.1, 0.44, 1
+                        Line:
+                            width: 1
+                            rectangle: self.x, self.y, self.width, self.height
                     text: 'Event'
                     bold: True
                     text_size: self.size
@@ -374,60 +455,41 @@
                     size_hint: (1, None)
                     height: 35
 
-                Button:
-                    text: '+'
-                    text_size: self.size
-                    valign: 'middle'
-                    halign: 'center'
-                    size_hint: (None, None)
-                    height: 35
-                    width: 35
+                MDFlatButton:
+                    size_hint: None, None
+                    size: "35dp", "35dp"
+                    canvas.after:
+                        Color:
+                            rgba: 0.1, 0.1, 0.44, 1
+                        Line:
+                            width: 1
+                            rectangle: self.x, self.y, self.width, self.height
+                    radius: [0, 0, 0, 0]
+                    md_bg_color: [0.1, 0.1, 0.44, 0.3]
+                    theme_text_color: "Custom"
                     on_press: root.open_todo_popup('Event')
 
+                    MDIcon:
+                        icon: "plus"
+                        halign: "center"
+                        theme_text_color: "Custom"
+                        text_color: 0.1, 0.1, 0.44, 1
+
             ScrollView:
-                id: task_scroll
                 size_hint: (1, 1)
 
                 BoxLayout:
-                    id: tasks
+                    id: event_list
+                    orientation: 'vertical'
                     canvas.before:
                         Color:
                             rgba: 0.6, 0.6, 0.6, 1
                         Rectangle:
                             size: self.size
                             pos: self.pos
-
+                    size_hint_y: None
                     height: self.minimum_height
 
-            ScrollView:
-                id: appointment_scroll
-                size_hint: (1, 1)
-
-                BoxLayout:
-                    id: appointments
-                    canvas.before:
-                        Color:
-                            rgba: 0.6, 0.6, 0.6, 1
-                        Rectangle:
-                            size: self.size
-                            pos: self.pos
-
-                    height: self.minimum_height
-
-            ScrollView:
-                id: event_scroll
-                size_hint: (1, 1)
-
-                BoxLayout:
-                    id: events
-                    canvas.before:
-                        Color:
-                            rgba: 0.6, 0.6, 0.6, 1
-                        Rectangle:
-                            size: self.size
-                            pos: self.pos
-
-                    height: self.minimum_height
 
 #########################################
 #            ADD TO-DO POPUP            #
@@ -554,12 +616,14 @@
                             on_text: root.reset_border_color(self, (1, 1, 1, 1), 'sd')
 
                         MDFlatButton:
+                            id: sd_date_selector
                             size_hint: None, None
                             size: "30dp", "30dp"  # Adjust width and height as needed
                             line_color: 1, 1, 1, 1  # White border color
                             text_color: 1, 1, 1, 1  # White icon color
                             radius: [10, 10, 10, 10]  # Rounded corners
                             theme_text_color: "Custom"
+                            on_press: root.show_date_picker('sd')
 
                             MDIcon:
                                 icon: "calendar"
@@ -595,6 +659,7 @@
                             text_color: 1, 1, 1, 1  # White icon color
                             radius: [10, 10, 10, 10]  # Rounded corners
                             theme_text_color: "Custom"
+                            on_press: root.show_time_picker('st')
 
                             MDIcon:
                                 icon: "clock"
@@ -674,6 +739,7 @@
                             text_color: 1, 1, 1, 1  # White icon color
                             radius: [10, 10, 10, 10]  # Rounded corners
                             theme_text_color: "Custom"
+                            on_press: root.show_date_picker('ed')
 
                             MDIcon:
                                 icon: "calendar"
@@ -709,6 +775,7 @@
                             text_color: 1, 1, 1, 1  # White icon color
                             radius: [10, 10, 10, 10]  # Rounded corners
                             theme_text_color: "Custom"
+                            on_press: root.show_time_picker('et')
 
                             MDIcon:
                                 icon: "clock"
@@ -799,3 +866,212 @@
                     halign: "center"
                     theme_text_color: "Custom"
                     text_color: 1, 1, 1, 1  # White icon color
+
+##########################################
+#              TO-DO LABEL               #
+##########################################
+
+<TodoLabel@BoxLayout>:
+    size_hint_y: None
+    height: self.minimum_height
+    orientation: 'vertical'
+    canvas.after:
+        Color:
+            rgba: 0, 0, 0, 1
+        Line:
+            width: 1.3
+            rectangle: self.x, self.y, self.width, self.height
+
+    BoxLayout:
+        size_hint_y: None
+        height: self.minimum_height
+
+        BoxLayout:
+            size_hint: None, None
+            width: 24
+            height: 100
+            orientation: 'vertical'
+
+            MDFlatButton:
+                padding: [0, 0, 0, 0]
+                size_hint: 1, None
+                height: "24dp"
+                radius: [0, 0, 0, 0]  # Rounded corners
+                theme_text_color: "Custom"
+                canvas.after:
+                    Color:
+                        rgba: 0, 0, 0, 1
+                    Line:
+                        width: 1
+                        rectangle: self.x, self.y, self.width, self.height
+
+                MDIcon:
+                    icon: "chevron-up"
+                    halign: 'center'
+                    valign: 'middle'
+                    size_hint: None, None
+                    size: "30dp", "30dp"
+                    theme_text_color: "Custom"
+                    text_color: 0, 0, 0, 1
+
+            CustomColorLabel:
+                bg_color: 0.6, 0, 0, 1
+                text: '1'
+                bold: True
+                canvas.after:
+                    Color:
+                        rgba: 0, 0, 0, 1
+                    Line:
+                        width: 1
+                        rectangle: self.x, self.y, self.width, self.height
+
+            MDFlatButton:
+                padding: [0, 0, 0, 0]
+                size_hint: 1, None
+                height: "24dp"
+                radius: [0, 0, 0, 0]  # Rounded corners
+                theme_text_color: "Custom"
+                canvas.after:
+                    Color:
+                        rgba: 0, 0, 0, 1
+                    Line:
+                        width: 1
+                        rectangle: self.x, self.y, self.width, self.height
+
+                MDIcon:
+                    icon: "chevron-down"
+                    halign: 'center'
+                    valign: 'middle'
+                    size_hint: None, None
+                    size: "30dp", "30dp"
+                    theme_text_color: "Custom"
+                    text_color: 0, 0, 0, 1
+
+        BoxLayout:
+            orientation: 'vertical'
+
+            BoxLayout:
+                size_hint_y: None
+                height: 24
+                canvas.after:
+                    Color:
+                        rgba: 0, 0, 0, 1
+                    Line:
+                        width: 1.2
+                        rectangle: self.x, self.y, self.width, self.height
+
+                CustomColorLabel:
+                    bg_color: (0.5, 0.5, 0.5, 1)
+                    text: 'TA.xxxxxxxxxxxx.xxxxxxxxxxxx.H.0'
+                    bold: True
+                    italic: True
+                    font_size: '12sp'
+                    text_size: self.size
+                    padding: [2, 0, 0, 2]
+
+                MDFlatButton:
+                    padding: [0, 0, 0, 0]
+                    size_hint: None, 1
+                    width: "30dp"
+                    radius: [0, 0, 0, 0]  # Rounded corners
+                    theme_text_color: "Custom"
+
+                    MDIcon:
+                        icon: "pencil"
+                        halign: 'center'
+                        valign: 'middle'
+                        size_hint: None, None
+                        size: "30dp", "30dp"
+                        theme_text_color: "Custom"
+                        text_color: 0, 0, 0, 1
+
+                MDFlatButton:
+                    padding: [0, 0, 0, 0]
+                    size_hint: None, 1
+                    width: "30dp"
+                    radius: [0, 0, 0, 0]  # Rounded corners
+                    theme_text_color: "Custom"
+
+                    MDIcon:
+                        icon: "check"
+                        halign: 'center'
+                        valign: 'middle'
+                        size_hint: None, None
+                        size: "30dp", "30dp"
+                        theme_text_color: "Custom"
+                        text_color: 0, 0, 0, 1
+
+                MDFlatButton:
+                    padding: [0, 0, 0, 0]
+                    size_hint: None, 1
+                    width: "30dp"
+                    radius: [0, 0, 0, 0]  # Rounded corners
+                    theme_text_color: "Custom"
+
+                    MDIcon:
+                        icon: "delete"
+                        halign: 'center'
+                        valign: 'middle'
+                        size_hint: None, None
+                        size: "30dp", "30dp"
+                        theme_text_color: "Custom"
+                        text_color: 0, 0, 0, 1
+
+            CustomColorLabel:
+                bg_color: 1, 1, 1, 1
+                text: 'Name'
+                color: 0, 0, 0, 1
+
+            CustomColorLabel:
+                bg_color: 1, 1, 1, 1
+                text: 'Start'
+                color: 0, 0, 0, 1
+
+            CustomColorLabel:
+                bg_color: 1, 1, 1, 1
+                text: 'End'
+                color: 0, 0, 0, 1
+
+            CustomColorLabel:
+                bg_color: 1, 1, 1, 1
+                text: 'Status'
+                color: 0, 0, 0, 1
+
+    MDFlatButton:
+        padding: [0, 0, 0, 0]
+        size_hint: 1, None
+        height: "24dp"
+        radius: [0, 0, 0, 0]  # Rounded corners
+        theme_text_color: "Custom"
+        canvas.after:
+            Color:
+                rgba: 0, 0, 0, 1
+            Line:
+                width: 1.2
+                rectangle: self.x, self.y, self.width, self.height
+
+        BoxLayout:
+            spacing: 10
+
+            MDIcon:
+                icon: "chevron-right"
+                halign: 'center'
+                valign: 'middle'
+                size_hint: None, None
+                size: "30dp", "30dp"
+                theme_text_color: "Custom"
+                text_color: 0, 0, 0, 1
+                canvas.after:
+                    Color:
+                        rgba: 0, 0, 0, 1
+                    Line:
+                        width: 1
+                        rectangle: self.x, self.y, self.width, self.height
+
+            CustomColorLabel:
+                bg_color: (0.9, 0.9, 0.9, 0)
+                text: 'DESC'
+                color: 0, 0, 0, 1
+                text_size: self.size
+                valign: 'middle'
+
