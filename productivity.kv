@@ -311,7 +311,7 @@
 
         BoxLayout:
             orientation: 'vertical'
-            spacing: 3
+            spacing: 7
 
             BoxLayout:
                 size_hint_y: None
@@ -360,6 +360,7 @@
                     id: task_list
                     padding: [0, 3, 0, 0]
                     orientation: 'vertical'
+                    spacing: 10
                     canvas.before:
                         Color:
                             rgba: 1, 1, 1, 1
@@ -367,14 +368,12 @@
                             size: self.size
                             pos: self.pos
                     size_hint_y: None
+                    size_hint_x: 0.99
                     height: self.minimum_height
-
-                    TodoLabel:
-                        id: label_one
 
         BoxLayout:
             orientation: 'vertical'
-            spacing: 1
+            spacing: 7
 
             BoxLayout:
                 size_hint_y: None
@@ -421,19 +420,22 @@
 
                 BoxLayout:
                     id: appointment_list
+                    padding: [0, 3, 0, 0]
                     orientation: 'vertical'
+                    spacing: 10
                     canvas.before:
                         Color:
-                            rgba: 0.6, 0.6, 0.6, 1
+                            rgba: 1, 1, 1, 1
                         Rectangle:
                             size: self.size
                             pos: self.pos
                     size_hint_y: None
+                    size_hint_x: 0.99
                     height: self.minimum_height
 
         BoxLayout:
             orientation: 'vertical'
-            spacing: 1
+            spacing: 7
 
             BoxLayout:
                 size_hint_y: None
@@ -480,14 +482,17 @@
 
                 BoxLayout:
                     id: event_list
+                    padding: [0, 3, 0, 0]
                     orientation: 'vertical'
+                    spacing: 10
                     canvas.before:
                         Color:
-                            rgba: 0.6, 0.6, 0.6, 1
+                            rgba: 1, 1, 1, 1
                         Rectangle:
                             size: self.size
                             pos: self.pos
                     size_hint_y: None
+                    size_hint_x: 0.99
                     height: self.minimum_height
 
 
@@ -872,14 +877,15 @@
 ##########################################
 
 <TodoLabel@BoxLayout>:
+    id: container
     size_hint_y: None
     height: self.minimum_height
     orientation: 'vertical'
     canvas.after:
         Color:
-            rgba: 0, 0, 0, 1
+            rgba: root.palette[0]
         Line:
-            width: 1.3
+            width: 1.2
             rectangle: self.x, self.y, self.width, self.height
 
     BoxLayout:
@@ -893,17 +899,19 @@
             orientation: 'vertical'
 
             MDFlatButton:
+                id: priority_up
                 padding: [0, 0, 0, 0]
                 size_hint: 1, None
                 height: "24dp"
                 radius: [0, 0, 0, 0]  # Rounded corners
                 theme_text_color: "Custom"
-                canvas.after:
+                canvas.before:
                     Color:
-                        rgba: 0, 0, 0, 1
-                    Line:
-                        width: 1
-                        rectangle: self.x, self.y, self.width, self.height
+                        rgba: root.palette[0]
+                    RoundedRectangle:
+                        size: self.size
+                        pos: self.pos
+                        radius: [0, 0, 0, 0]  # Same rounded corners
 
                 MDIcon:
                     icon: "chevron-up"
@@ -912,31 +920,35 @@
                     size_hint: None, None
                     size: "30dp", "30dp"
                     theme_text_color: "Custom"
-                    text_color: 0, 0, 0, 1
+                    text_color: 1, 1, 1, 1
 
             CustomColorLabel:
-                bg_color: 0.6, 0, 0, 1
+                id: priority_label
+                bg_color: root.p_color
+                color: root.p_text_color
                 text: '1'
                 bold: True
                 canvas.after:
                     Color:
-                        rgba: 0, 0, 0, 1
+                        rgba: root.palette[0]
                     Line:
                         width: 1
                         rectangle: self.x, self.y, self.width, self.height
 
             MDFlatButton:
+                id: priority_down
                 padding: [0, 0, 0, 0]
                 size_hint: 1, None
                 height: "24dp"
                 radius: [0, 0, 0, 0]  # Rounded corners
                 theme_text_color: "Custom"
-                canvas.after:
+                canvas.before:
                     Color:
-                        rgba: 0, 0, 0, 1
-                    Line:
-                        width: 1
-                        rectangle: self.x, self.y, self.width, self.height
+                        rgba: root.palette[0]
+                    RoundedRectangle:
+                        size: self.size
+                        pos: self.pos
+                        radius: [0, 0, 0, 0]  # Same rounded corners
 
                 MDIcon:
                     icon: "chevron-down"
@@ -945,36 +957,47 @@
                     size_hint: None, None
                     size: "30dp", "30dp"
                     theme_text_color: "Custom"
-                    text_color: 0, 0, 0, 1
+                    text_color: 1, 1, 1, 1
 
         BoxLayout:
             orientation: 'vertical'
 
             BoxLayout:
+                id: title_row
                 size_hint_y: None
                 height: 24
                 canvas.after:
                     Color:
-                        rgba: 0, 0, 0, 1
+                        rgba: root.palette[0]
                     Line:
                         width: 1.2
-                        rectangle: self.x, self.y, self.width, self.height
+                        points: self.x, self.y, self.right, self.y
 
                 CustomColorLabel:
-                    bg_color: (0.5, 0.5, 0.5, 1)
+                    id: title
+                    bg_color: root.palette[1]
                     text: 'TA.xxxxxxxxxxxx.xxxxxxxxxxxx.H.0'
                     bold: True
+                    color: root.palette[0]
                     italic: True
                     font_size: '12sp'
                     text_size: self.size
                     padding: [2, 0, 0, 2]
 
                 MDFlatButton:
+                    id: edit_button
                     padding: [0, 0, 0, 0]
                     size_hint: None, 1
                     width: "30dp"
                     radius: [0, 0, 0, 0]  # Rounded corners
                     theme_text_color: "Custom"
+                    canvas.before:
+                        Color:
+                            rgba: root.palette[0]
+                        RoundedRectangle:
+                            size: self.size
+                            pos: self.pos
+                            radius: [0, 0, 0, 0]  # Same rounded corners
 
                     MDIcon:
                         icon: "pencil"
@@ -983,14 +1006,22 @@
                         size_hint: None, None
                         size: "30dp", "30dp"
                         theme_text_color: "Custom"
-                        text_color: 0, 0, 0, 1
+                        text_color: 1, 1, 1, 1
 
                 MDFlatButton:
+                    id: check_button
                     padding: [0, 0, 0, 0]
                     size_hint: None, 1
                     width: "30dp"
                     radius: [0, 0, 0, 0]  # Rounded corners
                     theme_text_color: "Custom"
+                    canvas.before:
+                        Color:
+                            rgba: root.palette[0]
+                        RoundedRectangle:
+                            size: self.size
+                            pos: self.pos
+                            radius: [0, 0, 0, 0]  # Same rounded corners
 
                     MDIcon:
                         icon: "check"
@@ -999,14 +1030,23 @@
                         size_hint: None, None
                         size: "30dp", "30dp"
                         theme_text_color: "Custom"
-                        text_color: 0, 0, 0, 1
+                        text_color: 1, 1, 1, 1
 
                 MDFlatButton:
+                    id: delete_button
                     padding: [0, 0, 0, 0]
                     size_hint: None, 1
                     width: "30dp"
                     radius: [0, 0, 0, 0]  # Rounded corners
                     theme_text_color: "Custom"
+                    on_press: root.delete_todo()
+                    canvas.before:
+                        Color:
+                            rgba: root.palette[0]
+                        RoundedRectangle:
+                            size: self.size
+                            pos: self.pos
+                            radius: [0, 0, 0, 0]  # Same rounded corners
 
                     MDIcon:
                         icon: "delete"
@@ -1015,63 +1055,91 @@
                         size_hint: None, None
                         size: "30dp", "30dp"
                         theme_text_color: "Custom"
-                        text_color: 0, 0, 0, 1
+                        text_color: 1, 1, 1, 1
 
             CustomColorLabel:
+                id: name
                 bg_color: 1, 1, 1, 1
                 text: 'Name'
                 color: 0, 0, 0, 1
 
             CustomColorLabel:
+                id: start
                 bg_color: 1, 1, 1, 1
                 text: 'Start'
                 color: 0, 0, 0, 1
 
             CustomColorLabel:
+                id: end
                 bg_color: 1, 1, 1, 1
                 text: 'End'
                 color: 0, 0, 0, 1
 
             CustomColorLabel:
+                id: stat
                 bg_color: 1, 1, 1, 1
                 text: 'Status'
                 color: 0, 0, 0, 1
 
     MDFlatButton:
+        id: desc_button
         padding: [0, 0, 0, 0]
         size_hint: 1, None
         height: "24dp"
         radius: [0, 0, 0, 0]  # Rounded corners
         theme_text_color: "Custom"
+        md_bg_color: root.palette[1]
+        ripple_alpha: 0
+        on_release: root.toggle_description()
         canvas.after:
             Color:
-                rgba: 0, 0, 0, 1
+                rgba: root.palette[0]
             Line:
-                width: 1.2
+                width: 1
                 rectangle: self.x, self.y, self.width, self.height
 
         BoxLayout:
             spacing: 10
 
             MDIcon:
+                id: desc_chevron
                 icon: "chevron-right"
                 halign: 'center'
                 valign: 'middle'
                 size_hint: None, None
                 size: "30dp", "30dp"
                 theme_text_color: "Custom"
-                text_color: 0, 0, 0, 1
+                text_color: root.palette[0]
+                canvas.before:
+                    RoundedRectangle:
+                        size: self.size
+                        pos: self.pos
+                        radius: [0, 0, 0, 0]  # Same rounded corners
                 canvas.after:
                     Color:
-                        rgba: 0, 0, 0, 1
+                        rgba: root.palette[0]
                     Line:
                         width: 1
-                        rectangle: self.x, self.y, self.width, self.height
+                        points: self.right, self.y, self.right, self.top
 
             CustomColorLabel:
-                bg_color: (0.9, 0.9, 0.9, 0)
+                id: desc_label
+                bg_color: 0, 0, 0, 0
+                bold: True
                 text: 'DESC'
-                color: 0, 0, 0, 1
+                color: root.palette[0]
                 text_size: self.size
                 valign: 'middle'
 
+    CustomColorLabel:
+        id: desc_box  # Description box
+        bg_color: 1, 1, 1, 1
+        text: ''
+        color: 0, 0, 0, 0
+        font_size: '12sp'
+        text_size: self.size
+        valign: 'top'
+        halign: 'left'
+        padding: [2, 0, 0, 2]
+        size_hint_y: None
+        height: 0
