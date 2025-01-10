@@ -1,8 +1,10 @@
 from kivy.core.window import Window
 from kivymd.app import MDApp
 from kivy.uix.boxlayout import BoxLayout
+from kivy.properties import ListProperty
 from kivy.uix.tabbedpanel import TabbedPanel, TabbedPanelItem, TabbedPanelHeader
 from kivy.uix.label import Label
+from kivy.animation import Animation
 from kivy.uix.popup import Popup
 from kivy.clock import Clock
 import calendar as cal
@@ -178,6 +180,26 @@ class Todo(TabbedPanelItem):
         self.task_list = self.ids['task_list']
         self.appointment_list = self.ids['appointment_list']
         self.event_list = self.ids['event_list']
+        self.populate_list('Task')
+        self.populate_list('Appointment')
+        self.populate_list('Event')
+
+    def populate_list(self, todo_type, *args):
+        if todo_type == 'Task':
+            tasks = self.db_manager.get_todos('TA.')
+            self.task_list.clear_widgets()
+            for task in tasks:
+                self.task_list.add_widget(TodoLabel(task))
+        if todo_type == 'Appointment':
+            appointments = self.db_manager.get_todos('AP.')
+            self.appointment_list.clear_widgets()
+            for appointment in appointments:
+                self.appointment_list.add_widget(TodoLabel(appointment))
+        if todo_type == 'Event':
+            events = self.db_manager.get_todos('EV.')
+            self.event_list.clear_widgets()
+            for event in events:
+                self.event_list.add_widget(TodoLabel(event))
 
     def open_todo_popup(self, todo_type, *args):
         if todo_type == 'Task':
@@ -187,14 +209,15 @@ class Todo(TabbedPanelItem):
         if todo_type == 'Event':
             tid = 'EV.'
         popup = AddToDo(
-            on_submit = self.get_todo,
+            on_submit = self.add_todo,
             task_id = tid,
             title = f'Add {todo_type}'
         )
         popup.open()
 
-    def get_todo(self, task, *args):
+    def add_todo(self, task, todo_type, *args):
         self.db_manager.insert_todo(task)
+        self.populate_list(todo_type)
 
 #########################################
 #            ADD TO-DO POPUP            #
@@ -232,8 +255,6 @@ class AddToDo(Popup):
 
     def show_date_picker(self, val):
         date_picker = MDDatePicker()
-        date_picker.ids.cancel_button.radius = [4.0, 4.0, 4.0, 4.0]
-        date_picker.ids.ok_button.radius = [4.0, 4.0, 4.0, 4.0]
         date_picker.on_save = self.on_date_selected
         date_picker.parent_button = val
         self.date_picker = date_picker
@@ -241,8 +262,6 @@ class AddToDo(Popup):
 
     def show_time_picker(self, val):
         time_picker = MDTimePicker()
-        time_picker.ids.cancel_button.radius = [4.0, 4.0, 4.0, 4.0]
-        time_picker.ids.ok_button.radius = [4.0, 4.0, 4.0, 4.0]
         time_picker.on_save = self.on_time_selected
         time_picker.val = val
         self.time_picker = time_picker
@@ -291,6 +310,7 @@ class AddToDo(Popup):
             Line(width=1, rectangle=(instance.x, instance.y, instance.width, instance.height))
 
     def submit_todo(self, *args):
+        todo_type = self.title.split(' ')[1]
         task = {}
         task['id'] = self.task_id
         err = 0
@@ -391,7 +411,7 @@ class AddToDo(Popup):
 
         task['id'] = self.task_id
         task['desc'] = self.description.text
-        self.on_submit(task)
+        self.on_submit(task, todo_type)
         self.dismiss()
 
     def validate_task(self, text, data_type):
@@ -426,8 +446,45 @@ class AddToDo(Popup):
 ##########################################
 
 class TodoLabel(BoxLayout):
-    def __init__(self, **kwargs):
+    palette = ListProperty()
+    p_color = ListProperty()
+    p_text_color = ListProperty()
+
+    def __init__(self, task, **kwargs):
+        self.priority_colors = [(1, 1, 1, 1), (0, 0.5, 0, 1), (0.9, 0.45, 0, 0.8), (0.6, 0, 0, 1)]
+        self.priority_text_colors = [(0, 0, 0, 1), (1, 1, 1, 1), (1, 1, 1, 1), (1, 1, 1, 1)]
+        if task['id'].startswith('TA'):
+            self.palette = [(0.5, 0, 0.5, 1), (0.5, 0, 0.5, 0.3)]
+        elif task['id'].startswith('AP'):
+            self.palette = [(0.4, 0.26, 0.13, 1.0), (0.4, 0.26, 0.13, 0.3)] # Brown
+        elif task['id'].startswith('EV'):
+            self.palette = [(0.1, 0.1, 0.44, 1), (0.1, 0.1, 0.44, 0.3)]
+
+        self.p_color = self.priority_colors[task['priority']]
+        self.p_text_color = self.priority_text_colors[task['priority']]
+
         super(TodoLabel, self).__init__(**kwargs)
+        self.chevron_down = False
+        self.task = task
+
+    def delete_todo(self, *args):
+        self.parent.remove_widget(self)
+
+    def toggle_description(self, *args):
+        if self.chevron_down:
+            self.ids.desc_chevron.icon = "chevron-right"
+        else:
+            self.ids.desc_chevron.icon = "chevron-down"
+        self.chevron_down = not self.chevron_down
+
+        if self.ids.desc_box.height == 0:
+            anim = Animation(height=50, color=(0, 0, 0, 1), duration=0.1)
+            anim.start(self.ids.desc_box)
+        else:
+            anim = Animation(height=0, color=(0, 0, 0, 0), duration=0.1)
+            anim.start(self.ids.desc_box)
+
+
 
 ##########################################################################
 ###############                                            ###############
