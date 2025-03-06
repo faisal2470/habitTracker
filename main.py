@@ -13,7 +13,7 @@ from kivy.graphics import Color, Line, RoundedRectangle
 from kivymd.uix.pickers import MDDatePicker, MDTimePicker
 from db_manager import DatabaseManager
 
-Window.size = (1000, 600)
+Window.size = (1050, 620)
 
 Window.left = (1920 - Window.width) // 2
 Window.top = (1080 - Window.height) // 2
@@ -186,19 +186,28 @@ class Todo(TabbedPanelItem):
 
     def populate_list(self, todo_type, *args):
         if todo_type == 'Task':
+            priority_label = [0, 0, 0, 0]
             tasks = self.db_manager.get_todos('TA.')
             self.task_list.clear_widgets()
             for task in tasks:
+                priority_label[task['priority']] += 1
+                task['priority_label'] = priority_label[task['priority']]
                 self.task_list.add_widget(TodoLabel(task))
-        if todo_type == 'Appointment':
+        elif todo_type == 'Appointment':
+            priority_label = [0, 0, 0, 0]
             appointments = self.db_manager.get_todos('AP.')
             self.appointment_list.clear_widgets()
             for appointment in appointments:
+                priority_label[appointment['priority']] += 1
+                appointment['priority_label'] = priority_label[appointment['priority']]
                 self.appointment_list.add_widget(TodoLabel(appointment))
-        if todo_type == 'Event':
+        elif todo_type == 'Event':
+            priority_label = [0, 0, 0, 0]
             events = self.db_manager.get_todos('EV.')
             self.event_list.clear_widgets()
             for event in events:
+                priority_label[event['priority']] += 1
+                event['priority_label'] = priority_label[event['priority']]
                 self.event_list.add_widget(TodoLabel(event))
 
     def open_todo_popup(self, todo_type, *args):
@@ -466,6 +475,21 @@ class TodoLabel(BoxLayout):
         super(TodoLabel, self).__init__(**kwargs)
         self.chevron_down = False
         self.task = task
+
+        Clock.schedule_once(self.get_ids, 0)
+
+    def get_ids(self, *args):
+        self.priority_label = self.ids['priority_label']
+        self.title = self.ids['title']
+        self.start = self.ids['start']
+        self.end = self.ids['end']
+        self.name = self.ids['name']
+        self.stat = self.ids['stat']
+        self.desc_box = self.ids['desc_box']
+
+        self.title.text = self.task['id']
+        self.priority_label.text = f"{self.task['priority_label']}"
+        self.name.text = self.task['name']
 
     def delete_todo(self, *args):
         self.parent.remove_widget(self)
