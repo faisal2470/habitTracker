@@ -976,7 +976,7 @@
                 CustomColorLabel:
                     id: title
                     bg_color: root.palette[1]
-                    text: 'TA.xxxxxxxxxxxx.xxxxxxxxxxxx.H.0'
+                    text: ''
                     bold: True
                     color: root.palette[0]
                     italic: True
@@ -1057,29 +1057,40 @@
                         theme_text_color: "Custom"
                         text_color: 1, 1, 1, 1
 
-            CustomColorLabel:
-                id: name
-                bg_color: 1, 1, 1, 1
-                text: 'Name'
-                color: 0, 0, 0, 1
+            BoxLayout:
+                orientation: 'vertical'
+                BoxLayout:
+                    size_hint_y: 0.25
+                    CustomColorLabel:
+                        id: start
+                        bg_color: 1, 1, 1, 1
+                        text: 'Start'
+                        color: 0, 0, 0, 1
 
-            CustomColorLabel:
-                id: start
-                bg_color: 1, 1, 1, 1
-                text: 'Start'
-                color: 0, 0, 0, 1
+                    CustomColorLabel:
+                        id: end
+                        bg_color: 1, 1, 1, 1
+                        text: 'End'
+                        color: 0, 0, 0, 1
 
-            CustomColorLabel:
-                id: end
-                bg_color: 1, 1, 1, 1
-                text: 'End'
-                color: 0, 0, 0, 1
+                CustomColorLabel:
+                    bg_color: 1, 1, 1, 1
+                    id: name
+                    text: ''
+                    size_hint_y: 0.5
+                    font_size: '18sp'
+                    halign: 'center'
+                    valign: 'middle'
+                    text_size: self.size
+                    bold: True
+                    color: 0, 0, 0, 1
 
-            CustomColorLabel:
-                id: stat
-                bg_color: 1, 1, 1, 1
-                text: 'Status'
-                color: 0, 0, 0, 1
+                CustomColorLabel:
+                    id: stat
+                    bg_color: 1, 1, 1, 1
+                    size_hint_y: 0.25
+                    text: 'Status'
+                    color: 0, 0, 0, 1
 
     MDFlatButton:
         id: desc_button
